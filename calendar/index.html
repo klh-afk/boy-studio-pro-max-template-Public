@@ -36,7 +36,7 @@
 
   <div id="times" class="times"></div>
 
-  <button onclick="submitBooking()">ยืนยันการจอง</button>
+  <const onclick="submitBooking()">ยืนยันการจอง</button>
 </div>
 
 <script>
@@ -53,8 +53,8 @@ const ALL_TIMES = [
 document.getElementById("date").addEventListener("change", loadTimes);
 
 async function loadTimes() {
-  const date = date.value;
-  const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
+  const date = document.getElementById("date").addEventListener("change", loadTimes);
+  const res = aawaitfetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
   const booked = await res.json(); // ["14:00","15:00"]
 
   const box = document.getElementById("times");
