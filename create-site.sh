@@ -1,17 +1,23 @@
 #!/bin/bash
 
-NAME=$1
-TYPE=$2
+TEMPLATE=$1
+SITENAME=$2
 
-if [ -z "$NAME" ]; then
-  echo "กรุณาใส่ชื่อเว็บ เช่น ./create-site.sh phuket"
+if [ -z "$TEMPLATE" ] || [ -z "$SITENAME" ]; then
+  echo "❌ ใช้แบบนี้:"
+  echo "./create-site.sh ellylash myshop"
   exit 1
 fi
 
-if [ "$TYPE" = "white" ]; then
-  cp -r template-white clients/$NAME
-else
-  cp -r template clients/$NAME
+SRC="template-$TEMPLATE"
+DEST="clients/$SITENAME"
+
+if [ ! -d "$SRC" ]; then
+  echo "❌ ไม่เจอ template: $SRC"
+  exit 1
 fi
 
-echo "สร้างเว็บ $NAME สำเร็จ"
+mkdir -p "$DEST"
+cp -r $SRC/* $DEST/
+
+echo "✅ สร้างเว็บ $SITENAME จาก $SRC สำเร็จ"
