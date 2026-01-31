@@ -1,106 +1,158 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>จองคิวบริการ</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <style>
-body{font-family:system-ui;background:#f7f7f7;padding:20px}
-.box{background:#fff;border-radius:12px;padding:20px;max-width:420px;margin:auto}
-input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ddd}
-button{background:#000;color:#fff;border:none}
-.times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.time{padding:10px;border:1px solid #ccc;border-radius:8px;text-align:center;cursor:pointer}
-.disabled{opacity:.3;pointer-events:none}
-.active{background:#000;color:#fff}
+body {
+  font-family: system-ui;
+  background:#f4f4f4;
+  margin:0;
+  padding:20px;
+}
+.box {
+  background:#fff;
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+  border-radius:14px;
+}
+input, select, button {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+button {
+  background:#000;
+  color:#fff;
+  border:none;
+  margin-top:10px;
+}
+.times {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.time {
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  text-align:center;
+  cursor:pointer;
+}
+.time.active {
+  background:#000;
+  color:#fff;
+}
+.time.disabled {
+  opacity:0.3;
+  pointer-events:none;
+}
 </style>
 </head>
+
 <body>
-
 <div class="box">
-<h2>จองคิวบริการ</h2>
+  <h2>จองคิวบริการ</h2>
 
-<input id="name" placeholder="ชื่อ">
-<input id="phone" placeholder="เบอร์โทร">
-<select id="service">
-<option>ติดตั้งไฟ</option>
-<option>ซ่อมไฟ</option>
-<option>ตรวจระบบ</option>
-</select>
+  <input id="name" placeholder="ชื่อ" />
+  <input id="phone" placeholder="เบอร์โทร" />
 
-<input type="date" id="date">
-<div id="times" class="times"></div>
+  <select id="service">
+    <option>ติดตั้งไฟ</option>
+    <option>ซ่อมไฟ</option>
+    <option>ตรวจระบบ</option>
+  </select>
 
-<button onclick="submitBooking()">ยืนยันการจอง</button>
+  <input type="date" id="date" />
+  <div id="times" class="times"></div>
+
+  <button onclick="submitBooking()">ยืนยันการจอง</button>
 </div>
 
 <script>
 const API = "https://weathered-art-f630boy-calendar-api.boyjiza7.workers.dev";
 const shop_id = "shop001";
-let selectedTime = null;
 
 const ALL_TIMES = [
- "09:00","10:00","11:00",
- "13:00","14:00","15:00",
- "16:00","17:00"
+  "09:00","10:00","11:00",
+  "13:00","14:00","15:00",
+  "16:00","17:00"
 ];
 
-document.getElementById("date").addEventListener("change", loadTimes);
+let selectedTime = null;
+const dateInput = document.getElementById("date");
+const timesBox = document.getElementById("times");
+
+dateInput.addEventListener("change", loadTimes);
+
+// 👉 ตั้งค่าเป็นวันนี้อัตโนมัติ
+dateInput.valueAsDate = new Date();
+
+// 👉 โหลดเวลาทันทีตอนเปิดหน้า
+loadTimes();
 
 async function loadTimes() {
- const date = document.getElementById("date").value;
- if(!date) return;
+  const date = dateInput.value;
+  if (!date) return;
 
- const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
- const booked = await res.json();
+  const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
+  const booked = await res.json(); // ["14:00","15:00"]
 
- const box = document.getElementById("times");
- box.innerHTML = "";
- selectedTime = null;
+  timesBox.innerHTML = "";
+  selectedTime = null;
 
- ALL_TIMES.forEach(t=>{
-   const div = document.createElement("div");
-   div.className = "time";
-   div.innerText = t;
+  ALL_TIMES.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "time";
+    div.innerText = t;
 
-   if(booked.includes(t)) div.classList.add("disabled");
+    if (booked.includes(t)) {
+      div.classList.add("disabled");
+    } else {
+      div.onclick = () => {
+        document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
+        div.classList.add("active");
+        selectedTime = t;
+      }
+    }
 
-   div.onclick = ()=>{
-     document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
-     div.classList.add("active");
-     selectedTime = t;
-   };
-
-   box.appendChild(div);
- });
+    timesBox.appendChild(div);
+  });
 }
 
-async function submitBooking(){
- if(!selectedTime) return alert("กรุณาเลือกเวลา");
+async function submitBooking() {
+  if (!selectedTime) return alert("กรุณาเลือกเวลา");
+  if (!name.value || !phone.value) return alert("กรอกข้อมูลให้ครบ");
 
- const data = {
-   shop_id,
-   customer_name: name.value,
-   customer_phone: phone.value,
-   service: service.value,
-   date: date.value,
-   time: selectedTime
- };
+  const data = {
+    shop_id,
+    name: name.value,
+    phone: phone.value,
+    service: service.value,
+    date: dateInput.value,
+    time: selectedTime
+  };
 
- const res = await fetch(`${API}/book`,{
-   method:"POST",
-   headers:{'Content-Type':'application/json'},
-   body:JSON.stringify(data)
- });
+  const res = await fetch(`${API}/book`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
 
- if(res.ok){
-   alert("จองสำเร็จ");
-   location.reload();
- }else{
-   alert("เวลานี้ถูกจองแล้ว");
- }
+  if (res.ok) {
+    alert("จองสำเร็จ");
+    location.reload();
+  } else {
+    alert("เวลานี้ถูกจองแล้ว");
+  }
 }
 </script>
-
 </body>
 </html>
