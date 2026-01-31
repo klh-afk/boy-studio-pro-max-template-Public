@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin Booking</title>
+<style>
+body { font-family:system-ui; background:#f4f4f4; padding:20px }
+.card { background:#fff; padding:15px; border-radius:10px; margin-bottom:10px }
+select,button { padding:6px }
+</style>
+</head>
+<body>
+
+<h2>📋 รายการจอง</h2>
+<div id="list">กำลังโหลด...</div>
+
+<script>
+const PIN = "123456"
+const API = "https://weathered-art-f630boy-calendar-api.boyjiza7.workers.dev"
+
+async function load() {
+  const res = await fetch(`${API}/admin/bookings?pin=${PIN}`)
+  const data = await res.json()
+
+  list.innerHTML = ""
+  data.forEach(b => {
+    list.innerHTML += `
+      <div class="card">
+        <b>${b.date} ${b.time}</b><br>
+        ${b.name} | ${b.phone}<br>
+        ${b.service}<br>
+        <select onchange="update(${b.id},this.value)">
+          <option ${b.status=="pending"?"selected":""}>pending</option>
+          <option ${b.status=="done"?"selected":""}>done</option>
+          <option ${b.status=="cancel"?"selected":""}>cancel</option>
+        </select>
+        <button onclick="del(${b.id})">ลบ</button>
+      </div>
+    `
+  })
+}
+
+async function update(id,status){
+  await fetch(`${API}/admin/booking/${id}?pin=${PIN}`,{
+    method:"PATCH",
+    body:JSON.stringify({status}),
+    headers:{'Content-Type':'application/json'}
+  })
+}
+
+async function del(id){
+  if(!confirm("ลบจริง?"))return
+  await fetch(`${API}/admin/booking/${id}?pin=${PIN}`,{method:"DELETE"})
+  load()
+}
+
+load()
+</script>
+</body>
+</html>
