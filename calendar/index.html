@@ -3,35 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Boystudio Calendar</title>
+<title>Boystudio Booking Calendar</title>
 <style>
 body{background:#000;color:#fff;font-family:sans-serif;padding:20px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{padding:12px;border-radius:8px;text-align:center}
+.day{padding:14px;border-radius:8px;text-align:center;cursor:pointer}
 .free{background:#14532d}
 .booked{background:#7f1d1d}
+form{margin-top:20px}
+input,select,textarea,button{width:100%;padding:10px;margin-top:8px;border-radius:6px;border:none}
+button{background:#0ff;color:#000;font-weight:bold}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
 <h2>📅 ปฏิทินจองคิว</h2>
-<div id="cal" class="grid"></div>
+<div id="calendar" class="grid"></div>
+
+<div id="formBox" class="hidden">
+  <h3>จองวันที่ <span id="selectedDate"></span></h3>
+  <form onsubmit="saveBooking(event)">
+    <input id="name" placeholder="ชื่อ" required>
+    <input id="phone" placeholder="เบอร์โทร" required>
+    <input id="line" placeholder="LINE ID">
+    <select id="service">
+      <option>ติดตั้ง</option>
+      <option>ซ่อม</option>
+      <option>ดูหน้างาน</option>
+      <option>อื่นๆ</option>
+    </select>
+    <textarea id="note" placeholder="หมายเหตุ"></textarea>
+    <button type="submit">ยืนยันการจอง</button>
+  </form>
+</div>
 
 <script>
-fetch("db/bookings.json")
-  .then(res => res.json())
-  .then(data => {
-    const booked = data.map(b => b.date);
-    const cal = document.getElementById("cal");
+const dbKey = "boystudio-bookings";
+let bookings = JSON.parse(localStorage.getItem(dbKey)) || [];
+let selectedDate = null;
 
-    for(let d=1; d<=28; d++){
-      const date = "2026-02-" + String(d).padStart(2,"0");
-      const div = document.createElement("div");
-      div.className = "day " + (booked.includes(date) ? "booked":"free");
-      div.innerText = d;
-      cal.appendChild(div);
+function renderCalendar(){
+  const cal = document.getElementById("calendar");
+  cal.innerHTML = "";
+  for(let d=1; d<=28; d++){
+    const date = "2026-02-" + String(d).padStart(2,"0");
+    const div = document.createElement("div");
+    const booked = bookings.find(b => b.date === date);
+    div.className = "day " + (booked ? "booked" : "free");
+    div.innerText = d;
+    if(!booked){
+      div.onclick = () => openForm(date);
     }
+    cal.appendChild(div);
+  }
+}
+
+function openForm(date){
+  selectedDate = date;
+  document.getElementById("selectedDate").innerText = date;
+  document.getElementById("formBox").classList.remove("hidden");
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function saveBooking(e){
+  e.preventDefault();
+  bookings.push({
+    date: selectedDate,
+    name: name.value,
+    phone: phone.value,
+    line: line.value,
+    service: service.value,
+    note: note.value,
+    time: new Date().toISOString()
   });
+  localStorage.setItem(dbKey, JSON.stringify(bookings));
+  alert("จองสำเร็จ!");
+  document.getElementById("formBox").classList.add("hidden");
+  renderCalendar();
+}
+
+renderCalendar();
 </script>
 
 </body>
