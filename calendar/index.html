@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>จองคิวบริการ</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
 body {
@@ -31,7 +31,6 @@ button {
   background:#000;
   color:#fff;
   border:none;
-  margin-top:10px;
 }
 .times {
   display:grid;
@@ -45,6 +44,7 @@ button {
   border-radius:8px;
   text-align:center;
   cursor:pointer;
+  background:#fff;
 }
 .time.active {
   background:#000;
@@ -87,26 +87,26 @@ const ALL_TIMES = [
 ];
 
 let selectedTime = null;
+
 const dateInput = document.getElementById("date");
 const timesBox = document.getElementById("times");
 
-dateInput.addEventListener("change", loadTimes);
-
-// 👉 ตั้งค่าเป็นวันนี้อัตโนมัติ
 dateInput.valueAsDate = new Date();
-
-// 👉 โหลดเวลาทันทีตอนเปิดหน้า
 loadTimes();
+
+dateInput.addEventListener("change", loadTimes);
 
 async function loadTimes() {
   const date = dateInput.value;
   if (!date) return;
 
+  timesBox.innerHTML = "กำลังโหลด...";
+  selectedTime = null;
+
   const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
-  const booked = await res.json(); // ["14:00","15:00"]
+  const booked = await res.json(); // ["14:00"]
 
   timesBox.innerHTML = "";
-  selectedTime = null;
 
   ALL_TIMES.forEach(t => {
     const div = document.createElement("div");
@@ -117,12 +117,11 @@ async function loadTimes() {
       div.classList.add("disabled");
     } else {
       div.onclick = () => {
-        document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
+        document.querySelectorAll(".time").forEach(x => x.classList.remove("active"));
         div.classList.add("active");
         selectedTime = t;
       }
     }
-
     timesBox.appendChild(div);
   });
 }
@@ -147,12 +146,13 @@ async function submitBooking() {
   });
 
   if (res.ok) {
-    alert("จองสำเร็จ");
-    location.reload();
+    alert("✅ จองสำเร็จ");
+    loadTimes(); // refresh เวลาทันที
   } else {
-    alert("เวลานี้ถูกจองแล้ว");
+    alert("❌ เวลานี้ถูกจองแล้ว");
   }
 }
 </script>
+
 </body>
 </html>
