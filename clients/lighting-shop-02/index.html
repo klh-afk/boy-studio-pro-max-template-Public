@@ -7,79 +7,119 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&amp;family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
-    /* CSS Styles */
-    body { box-sizing: border-box; font-family: 'Prompt', 'Kanit', sans-serif; background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #fef3c7 100%); }
-    .clay-card { border-radius: 28px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.06), inset 0 2px 6px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.06); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
+    /* --- CSS Styles: Green Theme Edition --- */
+    body { 
+        box-sizing: border-box; 
+        font-family: 'Prompt', 'Kanit', sans-serif; 
+        background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #dcfce7 100%); 
+        color: #064e3b;
+    }
+    
+    .clay-card { 
+        border-radius: 28px; 
+        box-shadow: 
+            0 10px 40px rgba(20, 83, 45, 0.1),
+            0 6px 12px rgba(20, 83, 45, 0.06), 
+            inset 0 2px 6px rgba(255, 255, 255, 0.9), 
+            inset 0 -3px 6px rgba(0, 0, 0, 0.06); 
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        position: relative; 
+        overflow: hidden; 
+    }
+    
     .clay-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); opacity: 0.6; }
-    .clay-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.06); }
-    .clay-button { border-radius: 50%; box-shadow: 0 12px 32px rgba(236, 72, 153, 0.45), 0 6px 12px rgba(0, 0, 0, 0.12), inset 0 2px 8px rgba(255, 255, 255, 0.7), inset 0 -2px 8px rgba(0, 0, 0, 0.1); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
-    .clay-button:hover { transform: translateY(-8px) scale(1.08); box-shadow: 0 16px 48px rgba(236, 72, 153, 0.6), 0 8px 16px rgba(0, 0, 0, 0.15), inset 0 2px 8px rgba(255, 255, 255, 0.7); }
+    
+    .clay-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 20px 60px rgba(20, 83, 45, 0.15), 0 10px 20px rgba(20, 83, 45, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.06); }
+    
+    .clay-button { 
+        border-radius: 50%; 
+        box-shadow: 
+            0 12px 32px rgba(16, 185, 129, 0.45),
+            0 6px 12px rgba(0, 0, 0, 0.12), 
+            inset 0 2px 8px rgba(255, 255, 255, 0.7), 
+            inset 0 -2px 8px rgba(0, 0, 0, 0.1); 
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        position: relative; 
+    }
+    
+    .clay-button:hover { 
+        transform: translateY(-8px) scale(1.08); 
+        box-shadow: 
+            0 16px 48px rgba(16, 185, 129, 0.6), 
+            0 8px 16px rgba(0, 0, 0, 0.15), 
+            inset 0 2px 8px rgba(255, 255, 255, 0.7); 
+    }
+    
     .nav-icon { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
     .nav-icon:hover { transform: translateY(-4px) scale(1.15); }
-    .nav-icon.active { color: #ec4899; }
-    .bottom-nav { box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.12), inset 0 2px 6px rgba(255, 255, 255, 0.95); border-radius: 36px 36px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.8); }
-    .logo-3d { filter: drop-shadow(0 8px 16px rgba(236, 72, 153, 0.35)); }
+    .nav-icon.active { color: #059669; }
+    
+    .bottom-nav { box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.95); border-radius: 36px 36px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.8); }
+    
+    .logo-3d { filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.35)); }
+    
     .floating { animation: float 4s ease-in-out infinite; }
     @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-8px) rotate(1deg); } 75% { transform: translateY(-4px) rotate(-1deg); } }
-    .booking-status-pending { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-    .booking-status-confirmed { background: linear-gradient(135deg, #10b981, #059669); }
-    .calendar-day:hover:not(.disabled):not(.selected) { background: linear-gradient(135deg, #ec4899, #f472b6); color: white; transform: scale(1.15); }
-    .calendar-day.selected { background: linear-gradient(135deg, #ec4899, #f472b6); color: white; }
+    
     .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px); z-index: 1000; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .spinner { border: 3px solid rgba(236, 72, 153, 0.2); border-top: 3px solid #ec4899; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+    
+    .spinner { border: 3px solid rgba(16, 185, 129, 0.2); border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
     .hidden { display: none !important; }
     .fade-in { animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
   </style>
 </head>
-<body class="h-full w-full overflow-auto pb-28">
+<body class="h-full w-full overflow-auto pb-28 text-gray-800">
 
   <div id="app" class="w-full min-h-full">
     <div id="loading-state" class="w-full h-screen flex flex-col items-center justify-center">
       <div class="spinner"></div>
-      <p class="text-gray-500 font-semibold mt-4">กำลังโหลด...</p>
+      <p class="text-emerald-600 font-semibold mt-4">กำลังโหลด...</p>
     </div>
 
     <div id="dashboard" class="w-full hidden fade-in">
       <header class="w-full px-6 pt-8 pb-6">
         <div class="flex flex-col items-center mb-6">
           <div class="logo-3d floating mb-4">
-            <div class="w-32 h-32 rounded-3xl shadow-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white text-4xl">PP</div>
+            <div class="w-32 h-32 rounded-3xl shadow-2xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white text-4xl border-4 border-white">
+                <span class="text-5xl">🏔️</span>
+            </div>
           </div>
-          <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Phutoy Ployview</h1>
-          <p class="text-gray-600 font-semibold mt-2 text-center">ยินดีต้อนรับสู่ความผ่อนคลาย ✨</p>
+          <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500">Phutoy Ployview</h1>
+          <p class="text-gray-500 font-semibold mt-2 text-center">สัมผัสธรรมชาติแห่งขุนเขา 🍃</p>
         </div>
       </header>
 
       <main class="px-6 grid grid-cols-2 gap-5">
-        <div class="clay-card bg-gradient-to-br from-sky-400 via-blue-400 to-blue-500 p-6 cursor-pointer text-white" onclick="showPage('rooms')">
-          <div class="text-4xl mb-4">🏠</div>
+        <div class="clay-card bg-gradient-to-br from-teal-400 via-emerald-500 to-green-600 p-6 cursor-pointer text-white" onclick="showPage('rooms')">
+          <div class="text-4xl mb-4 bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm">🏠</div>
           <h3 class="font-extrabold text-xl leading-tight mb-1">ห้องพัก</h3>
-          <p class="text-white/90 text-sm font-semibold">สำรวจ 4 ห้อง</p>
+          <p class="text-white/90 text-sm font-semibold">วิวภูเขา & สวน</p>
         </div>
-        <div class="clay-card bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500 p-6 cursor-pointer text-white" onclick="showPage('food-order')">
-          <div class="text-4xl mb-4">🍽️</div>
+        <div class="clay-card bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 p-6 cursor-pointer text-white" onclick="showPage('food-order')">
+          <div class="text-4xl mb-4 bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm">🍽️</div>
           <h3 class="font-extrabold text-xl leading-tight mb-1">สั่งอาหาร</h3>
-          <p class="text-white/90 text-sm font-semibold">เมนูอร่อย</p>
+          <p class="text-white/90 text-sm font-semibold">ครัวภูทอย</p>
         </div>
-        <div class="clay-card bg-gradient-to-br from-emerald-400 via-green-400 to-green-500 p-6 cursor-pointer text-white" onclick="showPage('activities')">
-          <div class="text-4xl mb-4">🏊</div>
+        <div class="clay-card bg-gradient-to-br from-cyan-400 via-teal-500 to-emerald-600 p-6 cursor-pointer text-white" onclick="showPage('activities')">
+          <div class="text-4xl mb-4 bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm">🏊</div>
           <h3 class="font-extrabold text-xl leading-tight mb-1">กิจกรรม</h3>
-          <p class="text-white/90 text-sm font-semibold">พักผ่อน</p>
+          <p class="text-white/90 text-sm font-semibold">สระว่ายน้ำ & สปา</p>
         </div>
-        <div class="clay-card bg-gradient-to-br from-rose-400 via-pink-400 to-pink-500 p-6 cursor-pointer text-white" onclick="showPage('offers')">
-          <div class="text-4xl mb-4">🎁</div>
+        <div class="clay-card bg-gradient-to-br from-orange-300 via-amber-400 to-yellow-500 p-6 cursor-pointer text-white" onclick="showPage('offers')">
+          <div class="text-4xl mb-4 bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm">🎁</div>
           <h3 class="font-extrabold text-xl leading-tight mb-1">โปรโมชั่น</h3>
-          <p class="text-white/90 text-sm font-semibold">ดีลพิเศษ</p>
+          <p class="text-white/90 text-sm font-semibold">ส่วนลดพิเศษ</p>
         </div>
       </main>
 
       <section class="px-6 mt-6">
         <div class="flex items-center justify-between mb-4">
           <h4 class="font-bold text-gray-800 text-lg">📅 การจองล่าสุด</h4>
-          <button onclick="showPage('bookings')" class="text-pink-500 font-bold text-sm">ดูทั้งหมด →</button>
+          <button onclick="showPage('bookings')" class="text-emerald-600 font-bold text-sm hover:underline">ดูทั้งหมด →</button>
         </div>
         <div id="booking-preview" class="space-y-3"></div>
       </section>
@@ -87,136 +127,214 @@
 
     <div id="rooms-page" class="w-full hidden fade-in">
         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
-            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
-            <h2 class="text-2xl font-extrabold text-gray-800">เลือกห้องพัก</h2>
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center text-gray-600 hover:text-emerald-600">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800">เลือกห้องพัก 🏔️</h2>
         </header>
         <div class="px-6 space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('ภูทอย 1', 2500)">
-                <h4 class="font-bold text-lg text-gray-800">🏔️ ภูทอย 1</h4>
-                <p class="text-gray-500 text-sm">วิวภูเขา • เตียงควีน</p>
-                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            <div class="bg-white p-4 rounded-3xl shadow-lg border border-green-50 cursor-pointer hover:shadow-xl transition" onclick="selectRoom('ภูทอย 1', 2500)">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-lg text-emerald-900">🏔️ ภูทอย 1</h4>
+                        <p class="text-gray-500 text-sm mt-1">วิวภูเขา 180° • เตียงควีน</p>
+                    </div>
+                    <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-lg font-bold">ว่าง</span>
+                </div>
+                <div class="text-emerald-600 font-extrabold text-xl mt-3">฿2,500 <span class="text-xs text-gray-400 font-medium">/คืน</span></div>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('ภูทอย 2', 2500)">
-                <h4 class="font-bold text-lg text-gray-800">⛰️ ภูทอย 2</h4>
-                <p class="text-gray-500 text-sm">วิวภูเขา • เตียงคิง</p>
-                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            <div class="bg-white p-4 rounded-3xl shadow-lg border border-green-50 cursor-pointer hover:shadow-xl transition" onclick="selectRoom('ภูทอย 2', 2500)">
+                 <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-lg text-emerald-900">⛰️ ภูทอย 2</h4>
+                        <p class="text-gray-500 text-sm mt-1">วิวภูเขา • เตียงคิงไซส์</p>
+                    </div>
+                     <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-lg font-bold">ว่าง</span>
+                </div>
+                <div class="text-emerald-600 font-extrabold text-xl mt-3">฿2,500 <span class="text-xs text-gray-400 font-medium">/คืน</span></div>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('พลอยวิว 1', 2500)">
-                <h4 class="font-bold text-lg text-gray-800">💎 พลอยวิว 1</h4>
-                <p class="text-gray-500 text-sm">วิวสวน • เตียงควีน</p>
-                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('พลอยวิว 2', 2500)">
-                <h4 class="font-bold text-lg text-gray-800">✨ พลอยวิว 2</h4>
-                <p class="text-gray-500 text-sm">วิวสวน • เตียงคิง</p>
-                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            <div class="bg-white p-4 rounded-3xl shadow-lg border border-green-50 cursor-pointer hover:shadow-xl transition" onclick="selectRoom('พลอยวิว 1', 2500)">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-lg text-emerald-900">💎 พลอยวิว 1</h4>
+                        <p class="text-gray-500 text-sm mt-1">วิวสวนดอกไม้ • เตียงควีน</p>
+                    </div>
+                     <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-lg font-bold">ว่าง</span>
+                </div>
+                <div class="text-emerald-600 font-extrabold text-xl mt-3">฿2,500 <span class="text-xs text-gray-400 font-medium">/คืน</span></div>
             </div>
         </div>
     </div>
 
-    <div id="booking-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-6">
-        <div class="bg-white rounded-3xl w-full max-w-md p-6 fade-in shadow-2xl overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between mb-4">
-                <h3 class="text-xl font-bold">จองห้องพัก</h3>
-                <button onclick="hideBookingModal()" class="text-gray-500 font-bold">✕</button>
+    <div id="booking-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50 p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-[32px] w-full max-w-md p-6 fade-in shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between mb-6">
+                <h3 class="text-xl font-extrabold text-gray-800">ยืนยันการจอง</h3>
+                <button onclick="hideBookingModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200">✕</button>
             </div>
-            <div class="mb-4 bg-pink-50 p-3 rounded-xl">
-                <p class="text-xs text-gray-500">ห้องที่เลือก</p>
-                <p id="modal-room-name" class="font-bold text-lg"></p>
-                <p id="modal-room-price" class="text-pink-500 font-bold"></p>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-1">ชื่อผู้จอง</label>
-                <input type="text" id="guest-name" class="w-full border-2 border-gray-200 rounded-xl p-3" placeholder="ชื่อ-นามสกุล">
+            <div class="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-2xl border border-green-100">
+                <p class="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-1">ห้องที่เลือก</p>
+                <div class="flex justify-between items-end">
+                    <p id="modal-room-name" class="font-bold text-xl text-gray-800"></p>
+                    <p id="modal-room-price" class="text-emerald-600 font-bold text-lg"></p>
+                </div>
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-1">วันที่เข้าพัก (Check-in)</label>
-                <input type="date" id="check-in-date" class="w-full border-2 border-gray-200 rounded-xl p-3" onchange="calculateTotal()">
+                <label class="block text-sm font-bold text-gray-700 mb-2">ชื่อผู้จอง</label>
+                <input type="text" id="guest-name" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl p-3 focus:outline-none focus:border-emerald-500 transition-colors" placeholder="ชื่อ-นามสกุล">
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-1">วันที่ออก (Check-out)</label>
-                <input type="date" id="check-out-date" class="w-full border-2 border-gray-200 rounded-xl p-3" onchange="calculateTotal()">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">เช็คอิน</label>
+                    <input type="date" id="check-in-date" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500" onchange="calculateTotal()">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">เช็คเอาท์</label>
+                    <input type="date" id="check-out-date" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500" onchange="calculateTotal()">
+                </div>
             </div>
-            <div class="flex justify-between items-center mb-6">
-                <span class="font-bold">ราคารวม</span>
-                <span id="total-price" class="text-2xl font-extrabold text-pink-500">฿0</span>
+            <div class="flex justify-between items-center mb-6 pt-4 border-t border-gray-100">
+                <span class="font-bold text-gray-600">ราคารวม</span>
+                <span id="total-price" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500">฿0</span>
             </div>
-            <button onclick="confirmBooking()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">ยืนยันการจอง</button>
+            <button onclick="confirmBooking()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:shadow-xl hover:scale-[1.02] transition-all">ยืนยันการจอง ✨</button>
         </div>
     </div>
 
     <div id="food-order-page" class="w-full hidden fade-in">
-         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4 sticky top-0 bg-white z-10">
-            <button onclick="showPage('home')" class="w-10 h-10 bg-white border rounded-full shadow flex items-center justify-center">🔙</button>
-            <h2 class="text-2xl font-extrabold text-gray-800 flex-1">สั่งอาหาร</h2>
+         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4 sticky top-0 bg-white/95 backdrop-blur-md z-10 border-b border-gray-100">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white border border-gray-200 rounded-full shadow-sm flex items-center justify-center hover:bg-gray-50">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800 flex-1">สั่งอาหาร 🍲</h2>
             <div class="relative" onclick="showCart()">
-                <div class="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white">🛒</div>
-                <div id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full hidden">0</div>
+                <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-200">🛒</div>
+                <div id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold border-2 border-white hidden">0</div>
             </div>
         </header>
-        <div id="menu-list" class="px-6 pb-6 space-y-3">
-            </div>
+        <div id="menu-list" class="px-6 py-6 space-y-4"></div>
     </div>
 
-    <div id="cart-modal" class="fixed inset-0 bg-black/50 hidden items-end justify-center z-50">
-        <div class="bg-white rounded-t-3xl w-full max-w-md p-6 fade-in shadow-2xl h-[80vh] flex flex-col">
-            <div class="flex justify-between mb-4">
-                <h3 class="text-xl font-bold">ตะกร้าสินค้า</h3>
-                <button onclick="hideCart()" class="text-gray-500 font-bold">✕</button>
+    <div id="cart-modal" class="fixed inset-0 bg-black/40 hidden items-end justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-t-[32px] w-full max-w-md p-6 fade-in shadow-2xl h-[85vh] flex flex-col">
+            <div class="flex justify-between mb-6">
+                <h3 class="text-2xl font-extrabold text-gray-800">ตะกร้าของคุณ 🛒</h3>
+                <button onclick="hideCart()" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-500">✕</button>
             </div>
-            <div id="cart-items" class="flex-1 overflow-y-auto space-y-3"></div>
-            <div class="pt-4 border-t">
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
+            <div class="pt-6 border-t border-gray-100 mt-4">
                  <div class="flex justify-between items-center mb-4">
-                    <span class="font-bold">รวมทั้งหมด</span>
-                    <span id="cart-total" class="text-2xl font-extrabold text-pink-500">฿0</span>
+                    <span class="font-bold text-gray-600">รวมทั้งหมด</span>
+                    <span id="cart-total" class="text-3xl font-extrabold text-emerald-600">฿0</span>
                 </div>
-                <input type="text" id="order-room-number" placeholder="ระบุห้องพัก (เช่น ภูทอย 1)" class="w-full border-2 border-gray-200 rounded-xl p-3 mb-3">
-                <button onclick="confirmOrder()" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold shadow-lg">สั่งเลย</button>
+                <input type="text" id="order-room-number" placeholder="ระบุห้องพัก (เช่น ภูทอย 1)" class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 mb-4 focus:outline-none focus:border-emerald-500 font-medium">
+                <button onclick="confirmOrder()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:scale-[1.02] transition-transform">สั่งเลย! 🛵</button>
             </div>
         </div>
     </div>
 
-    <div id="bookings-page" class="w-full hidden fade-in">
+    <div id="bookings-page" class="w-full hidden fade-in pb-24">
         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
             <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
-            <h2 class="text-2xl font-extrabold text-gray-800">รายการจอง</h2>
+            <h2 class="text-2xl font-extrabold text-gray-800">รายการจองของฉัน</h2>
         </header>
-        <div id="all-bookings-list" class="px-6 space-y-4 pb-24"></div>
+        <div id="all-bookings-list" class="px-6 space-y-4"></div>
     </div>
-     <div id="manage-orders-page" class="w-full hidden fade-in">
+    
+     <div id="manage-orders-page" class="w-full hidden fade-in pb-24">
         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
             <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
             <h2 class="text-2xl font-extrabold text-gray-800">จัดการออเดอร์</h2>
         </header>
-        <div id="all-orders-list" class="px-6 space-y-4 pb-24"></div>
+        <div id="all-orders-list" class="px-6 space-y-4"></div>
+    </div>
+
+    <div id="contact-page" class="w-full hidden fade-in pb-24">
+        <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center hover:scale-110 transition">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800">ติดต่อเรา</h2>
+        </header>
+
+        <div class="px-6 space-y-5">
+            <div class="bg-white rounded-3xl p-5 shadow-lg border border-green-50 space-y-3">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-green-500 rounded-2xl flex items-center justify-center text-3xl text-white shadow-lg">
+                        📞
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-lg">เบอร์โทรศัพท์</h4>
+                        <p class="text-xs text-gray-400">กดเพื่อโทรออก</p>
+                    </div>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-gray-100">
+                    <a href="tel:0899877824" class="block bg-emerald-50 text-emerald-700 font-bold text-center py-3 rounded-xl hover:bg-emerald-100 transition">
+                        089-987-7824
+                    </a>
+                    <a href="tel:0917467498" class="block bg-emerald-50 text-emerald-700 font-bold text-center py-3 rounded-xl hover:bg-emerald-100 transition">
+                        091-746-7498
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <a href="#" class="bg-[#06C755] rounded-3xl p-4 shadow-lg text-white flex flex-col items-center justify-center gap-2 active:scale-95 transition">
+                    <span class="text-3xl">💬</span>
+                    <span class="font-bold">Line Official</span>
+                </a>
+                <a href="#" class="bg-[#1877F2] rounded-3xl p-4 shadow-lg text-white flex flex-col items-center justify-center gap-2 active:scale-95 transition">
+                    <span class="text-3xl">facebook</span>
+                    <span class="font-bold">Facebook</span>
+                </a>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-lg border border-green-50 space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-xl">📍</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">ที่อยู่</h4>
+                        <p class="text-gray-600 text-sm mt-1">123 ภูเขาพลอย ต.เพลินใจ<br>อ.เมือง จ.เชียงราย 57000</p>
+                        <a href="Https://maps.app.goo.gl/ZZEhUsLrxbP4HZ96A" target="_blank" class="mt-2 inline-block text-xs font-bold text-emerald-600 border-b border-emerald-600 pb-0.5 hover:text-emerald-800">
+                            เปิดแผนที่ Google Maps 🗺️
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="activities-page" class="w-full hidden fade-in p-6 text-center">
-        <button onclick="showPage('home')" class="mb-4">🔙 กลับ</button>
-        <h2 class="text-2xl font-bold">หน้านี้กำลังปรับปรุง</h2>
+        <button onclick="showPage('home')" class="mb-4 text-emerald-600 font-bold">🔙 กลับหน้าหลัก</button>
+        <h2 class="text-2xl font-bold text-gray-800">หน้านี้กำลังปรับปรุง 🛠️</h2>
+        <p class="text-gray-500 mt-2">เตรียมพบกับกิจกรรมสนุกๆ เร็วๆ นี้</p>
     </div>
     <div id="offers-page" class="w-full hidden fade-in p-6 text-center">
-        <button onclick="showPage('home')" class="mb-4">🔙 กลับ</button>
-        <h2 class="text-2xl font-bold">หน้านี้กำลังปรับปรุง</h2>
+        <button onclick="showPage('home')" class="mb-4 text-emerald-600 font-bold">🔙 กลับหน้าหลัก</button>
+        <h2 class="text-2xl font-bold text-gray-800">โปรโมชั่นเร็วๆ นี้ ✨</h2>
     </div>
 
-    <nav class="bottom-nav fixed bottom-0 w-full bg-white/95 backdrop-blur flex justify-around p-4 z-40">
-        <button onclick="showPage('home')" class="text-xs font-bold flex flex-col items-center text-pink-500">🏠 หน้าหลัก</button>
-        <button onclick="showPage('manage-orders')" class="text-xs font-bold flex flex-col items-center text-gray-400">📋 ออเดอร์</button>
-        <div class="w-12"></div> <button onclick="showPage('bookings')" class="text-xs font-bold flex flex-col items-center text-gray-400">📅 การจอง</button>
-        <button onclick="alert('ติดต่อ 02-123-4567')" class="text-xs font-bold flex flex-col items-center text-gray-400">📞 ติดต่อ</button>
+    <nav class="bottom-nav fixed bottom-0 w-full bg-white/95 backdrop-blur-lg flex justify-around p-4 z-40 pb-6">
+        <button onclick="showPage('home')" class="nav-icon text-xs font-bold flex flex-col items-center text-emerald-600">
+            <span class="text-xl mb-1">🏠</span> หน้าหลัก
+        </button>
+        <button onclick="showPage('manage-orders')" class="nav-icon text-xs font-bold flex flex-col items-center text-gray-400 hover:text-emerald-500">
+            <span class="text-xl mb-1">📋</span> ออเดอร์
+        </button>
+        <div class="w-12"></div>
+        <button onclick="showPage('bookings')" class="nav-icon text-xs font-bold flex flex-col items-center text-gray-400 hover:text-emerald-500">
+            <span class="text-xl mb-1">📅</span> การจอง
+        </button>
+        <button onclick="showPage('contact')" class="nav-icon text-xs font-bold flex flex-col items-center text-gray-400 hover:text-emerald-500">
+            <span class="text-xl mb-1">📞</span> ติดต่อ
+        </button>
     </nav>
-    <button onclick="showPage('rooms')" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 clay-button w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white text-2xl z-50">➕</button>
     
-    <div id="toast" class="toast bg-green-500 text-white px-6 py-4 rounded-2xl shadow-xl font-bold">
-        บันทึกสำเร็จ!
+    <button onclick="showPage('rooms')" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 clay-button w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center text-white text-3xl z-50 border-4 border-white">➕</button>
+    
+    <div id="toast" class="toast bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl font-bold flex items-center gap-2">
+        <span>✅</span> <span id="toast-message">บันทึกสำเร็จ!</span>
     </div>
 
   </div>
 
   <script>
-    // --- Data Management (LocalStorage Replacement) ---
-    const DB_KEY = 'phutoy_data_v1';
+    // --- Data Management ---
+    const DB_KEY = 'phutoy_green_v3';
     
     function getDB() {
         const data = localStorage.getItem(DB_KEY);
@@ -228,20 +346,20 @@
         refreshData();
     }
 
-    // --- State & Variables ---
+    // --- State ---
     let selectedRoomData = null;
     let cart = [];
     
     const menuItems = [
-        { name: 'หมูกระทะ (ชุด)', price: 590, icon: '🍲' },
-        { name: 'ข้าวผัดปู', price: 120, icon: '🦀' },
-        { name: 'ต้มยำกุ้ง', price: 150, icon: '🦐' },
-        { name: 'น้ำเปล่า', price: 20, icon: '💧' },
-        { name: 'โค้ก', price: 30, icon: '🥤' },
-        { name: 'เฟรนช์ฟรายส์', price: 79, icon: '🍟' }
+        { name: 'ชุดหมูกระทะ ภูเขาไฟ', price: 599, icon: '🥘', desc: 'ชุดใหญ่ หมู+ทะเล+ผัก' },
+        { name: 'ปลาทับทิมทอดสมุนไพร', price: 350, icon: '🐟', desc: 'สมุนไพรจากสวน' },
+        { name: 'ต้มยำกุ้งน้ำข้น', price: 180, icon: '🦐', desc: 'รสจัดจ้าน' },
+        { name: 'ไข่เจียวหมูสับ', price: 80, icon: '🍳', desc: 'กรอบฟู' },
+        { name: 'ข้าวสวย (โถ)', price: 60, icon: '🍚', desc: 'ข้าวหอมมะลิ' },
+        { name: 'น้ำเก๊กฮวยเย็น', price: 40, icon: '🍹', desc: 'สดชื่น' }
     ];
 
-    // --- Initialization ---
+    // --- Init ---
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             document.getElementById('loading-state').style.display = 'none';
@@ -259,19 +377,15 @@
 
     // --- Navigation ---
     function showPage(pageId) {
-        // Hide all pages
-        ['dashboard', 'rooms-page', 'food-order-page', 'bookings-page', 'manage-orders-page', 'activities-page', 'offers-page'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
+        const pages = ['dashboard', 'rooms-page', 'food-order-page', 'bookings-page', 'manage-orders-page', 'activities-page', 'offers-page', 'contact-page'];
+        pages.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
         });
         
-        // Show target page
-        if (pageId === 'home') document.getElementById('dashboard').classList.remove('hidden');
-        else if (pageId === 'rooms') document.getElementById('rooms-page').classList.remove('hidden');
-        else if (pageId === 'bookings') document.getElementById('bookings-page').classList.remove('hidden');
-        else if (pageId === 'manage-orders') document.getElementById('manage-orders-page').classList.remove('hidden');
-        else if (pageId === 'food-order') document.getElementById('food-order-page').classList.remove('hidden');
-        else if (pageId === 'activities') document.getElementById('activities-page').classList.remove('hidden');
-        else if (pageId === 'offers') document.getElementById('offers-page').classList.remove('hidden');
+        const target = document.getElementById(pageId === 'home' ? 'dashboard' : pageId + (pageId.endsWith('page') ? '' : '-page'));
+        if(target) target.classList.remove('hidden');
+        window.scrollTo(0,0);
     }
 
     // --- Booking Logic ---
@@ -297,7 +411,7 @@
         const checkOut = new Date(document.getElementById('check-out-date').value);
         
         if (checkIn && checkOut && checkOut > checkIn) {
-            const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
             const total = nights * selectedRoomData.price;
             document.getElementById('total-price').textContent = `฿${total.toLocaleString()}`;
         } else {
@@ -329,7 +443,7 @@
         saveDB(db);
         
         hideBookingModal();
-        showToast('จองห้องพักสำเร็จ!');
+        showToast('จองห้องพักสำเร็จ! 🏔️');
     }
 
     function renderBookingPreview() {
@@ -337,18 +451,21 @@
         const container = document.getElementById('booking-preview');
         
         if (db.bookings.length === 0) {
-            container.innerHTML = '<p class="text-gray-400 text-center text-sm">ยังไม่มีการจอง</p>';
+            container.innerHTML = '<div class="bg-white/50 p-4 rounded-2xl text-center border border-dashed border-green-200"><p class="text-gray-400 text-sm">ยังไม่มีการจอง</p></div>';
             return;
         }
 
-        const latest = db.bookings.slice(-2).reverse(); // Show last 2
+        const latest = db.bookings.slice(-2).reverse(); 
         container.innerHTML = latest.map(b => `
-            <div class="bg-white p-3 rounded-xl shadow-sm border flex justify-between items-center">
-                <div>
-                    <div class="font-bold text-gray-800">${b.room}</div>
-                    <div class="text-xs text-gray-500">${b.guest} • ${b.checkIn}</div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-green-50 flex justify-between items-center cursor-pointer hover:shadow-md transition" onclick="showPage('bookings')">
+                <div class="flex items-center gap-3">
+                    <div class="bg-emerald-100 w-10 h-10 rounded-full flex items-center justify-center text-xl">🛌</div>
+                    <div>
+                        <div class="font-bold text-gray-800 text-sm">${b.room}</div>
+                        <div class="text-xs text-gray-500">${b.guest} • ${b.checkIn}</div>
+                    </div>
                 </div>
-                <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg">รอเข้าพัก</span>
+                <span class="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold border border-yellow-200">รอเข้าพัก</span>
             </div>
         `).join('');
     }
@@ -357,18 +474,24 @@
         const db = getDB();
         const container = document.getElementById('all-bookings-list');
         if (db.bookings.length === 0) {
-            container.innerHTML = '<div class="text-center py-10 text-gray-400">ว่างเปล่า</div>';
+            container.innerHTML = '<div class="text-center py-20 opacity-50"><div class="text-6xl mb-4">📅</div>ยังไม่มีการจอง</div>';
             return;
         }
         container.innerHTML = db.bookings.slice().reverse().map(b => `
-            <div class="bg-white p-4 rounded-xl shadow-md border mb-3">
-                <div class="flex justify-between mb-2">
-                    <h4 class="font-bold text-lg">${b.room}</h4>
-                    <span class="text-pink-500 font-bold">${b.total}</span>
+            <div class="bg-white p-5 rounded-[24px] shadow-md border border-green-50 mb-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-100 to-transparent opacity-50 rounded-bl-full"></div>
+                <div class="flex justify-between mb-3 relative z-10">
+                    <h4 class="font-bold text-lg text-emerald-900">${b.room}</h4>
+                    <span class="text-emerald-600 font-extrabold bg-emerald-50 px-2 py-1 rounded-lg">${b.total}</span>
                 </div>
-                <p class="text-gray-600">👤 ${b.guest}</p>
-                <p class="text-sm text-gray-500">📅 ${b.checkIn} - ${b.checkOut}</p>
-                <button onclick="cancelBooking(${b.id})" class="mt-3 text-red-500 text-sm underline">ยกเลิกการจอง</button>
+                <div class="space-y-1 text-sm text-gray-600 relative z-10">
+                    <p>👤 <span class="font-medium">${b.guest}</span></p>
+                    <p>📅 เข้า: ${b.checkIn}</p>
+                    <p>📅 ออก: ${b.checkOut}</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+                    <button onclick="cancelBooking(${b.id})" class="text-red-400 text-xs font-bold hover:text-red-600 px-3 py-1 rounded-full hover:bg-red-50 transition">ยกเลิกการจอง</button>
+                </div>
             </div>
         `).join('');
     }
@@ -378,22 +501,23 @@
         const db = getDB();
         db.bookings = db.bookings.filter(b => b.id !== id);
         saveDB(db);
-        showToast('ลบการจองแล้ว', 'red');
+        showToast('ลบการจองแล้ว 🗑️', 'red');
     }
 
     // --- Food Order Logic ---
     function renderMenu() {
         const container = document.getElementById('menu-list');
         container.innerHTML = menuItems.map((item, index) => `
-            <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <span class="text-3xl">${item.icon}</span>
+            <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center group hover:border-emerald-200 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="bg-gray-50 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:scale-110 transition-transform">${item.icon}</div>
                     <div>
-                        <div class="font-bold text-gray-800">${item.name}</div>
-                        <div class="text-pink-500 font-bold">฿${item.price}</div>
+                        <div class="font-bold text-gray-800 text-lg">${item.name}</div>
+                        <div class="text-gray-400 text-xs mb-1">${item.desc}</div>
+                        <div class="text-emerald-600 font-bold">฿${item.price}</div>
                     </div>
                 </div>
-                <button onclick="addToCart(${index})" class="bg-pink-500 text-white w-8 h-8 rounded-full shadow hover:scale-110 transition">+</button>
+                <button onclick="addToCart(${index})" class="bg-emerald-100 text-emerald-600 w-10 h-10 rounded-full shadow-sm hover:bg-emerald-500 hover:text-white transition-all text-xl flex items-center justify-center">+</button>
             </div>
         `).join('');
     }
@@ -404,7 +528,7 @@
         if (existing) existing.qty++;
         else cart.push({...item, qty: 1});
         updateCartUI();
-        showToast('เพิ่มลงตะกร้าแล้ว');
+        showToast(`เพิ่ม ${item.name} แล้ว`);
     }
 
     function updateCartUI() {
@@ -425,20 +549,23 @@
         
         let total = 0;
         if(cart.length === 0) {
-            container.innerHTML = '<p class="text-center text-gray-400 mt-10">ไม่มีสินค้าในตะกร้า</p>';
+            container.innerHTML = '<div class="flex flex-col items-center justify-center h-full opacity-40"><span class="text-6xl mb-4">🛒</span><p>ตะกร้าว่างเปล่า</p></div>';
         } else {
             container.innerHTML = cart.map((item, index) => {
                 total += item.price * item.qty;
                 return `
-                <div class="flex justify-between items-center border-b py-2">
-                    <div>
-                        <div class="font-bold text-sm">${item.name}</div>
-                        <div class="text-xs text-gray-500">฿${item.price} x ${item.qty}</div>
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${item.icon}</span>
+                        <div>
+                            <div class="font-bold text-sm text-gray-800">${item.name}</div>
+                            <div class="text-xs text-emerald-600 font-bold">฿${item.price} x ${item.qty}</div>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="adjustCart(${index}, -1)" class="bg-gray-200 w-6 h-6 rounded text-sm">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="adjustCart(${index}, 1)" class="bg-pink-500 text-white w-6 h-6 rounded text-sm">+</button>
+                    <div class="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm">
+                        <button onclick="adjustCart(${index}, -1)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500">-</button>
+                        <span class="font-bold text-sm w-4 text-center">${item.qty}</span>
+                        <button onclick="adjustCart(${index}, 1)" class="w-6 h-6 flex items-center justify-center text-emerald-500 hover:bg-emerald-50 rounded">+</button>
                     </div>
                 </div>`;
             }).join('');
@@ -473,39 +600,44 @@
             items: cart,
             total,
             status: 'pending',
-            time: new Date().toLocaleString('th-TH')
+            time: new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})
         });
         saveDB(db);
         
         cart = [];
         updateCartUI();
         hideCart();
-        showToast('สั่งอาหารสำเร็จ! 🍲');
+        showToast('สั่งอาหารสำเร็จ! กำลังปรุง... 👨‍🍳');
     }
 
     function renderAllOrders() {
         const db = getDB();
         const container = document.getElementById('all-orders-list');
         if (db.orders.length === 0) {
-            container.innerHTML = '<div class="text-center py-10 text-gray-400">ยังไม่มีออเดอร์</div>';
+            container.innerHTML = '<div class="text-center py-20 opacity-50"><div class="text-6xl mb-4">📋</div>ยังไม่มีออเดอร์</div>';
             return;
         }
         container.innerHTML = db.orders.slice().reverse().map(o => `
-            <div class="bg-white p-4 rounded-xl shadow-md border mb-3">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <h4 class="font-bold text-lg">ห้อง: ${o.room}</h4>
-                        <p class="text-xs text-gray-500">${o.time}</p>
+            <div class="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 mb-3">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-lg font-bold text-sm">ห้อง ${o.room}</div>
+                        <span class="text-gray-400 text-xs">🕒 ${o.time}</span>
                     </div>
-                    <span class="${o.status==='pending'?'bg-yellow-500':'bg-green-500'} text-white text-xs px-2 py-1 rounded">${o.status==='pending'?'รอทำ':'เสร็จ'}</span>
+                    <span class="${o.status==='pending'?'bg-yellow-100 text-yellow-600':'bg-green-100 text-green-600'} text-xs font-bold px-2 py-1 rounded-full border ${o.status==='pending'?'border-yellow-200':'border-green-200'}">
+                        ${o.status==='pending'?'⏳ กำลังปรุง':'✅ เสิร์ฟแล้ว'}
+                    </span>
                 </div>
-                <div class="bg-gray-50 p-2 rounded mb-2 text-sm">
-                    ${o.items.map(i => `<div>- ${i.name} x${i.qty}</div>`).join('')}
+                <div class="bg-gray-50 p-3 rounded-xl mb-3 text-sm space-y-1">
+                    ${o.items.map(i => `<div class="flex justify-between text-gray-600"><span>${i.name}</span> <span class="font-bold">x${i.qty}</span></div>`).join('')}
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-pink-500">รวม ฿${o.total.toLocaleString()}</span>
-                    ${o.status === 'pending' ? `<button onclick="finishOrder(${o.id})" class="bg-green-500 text-white text-xs px-3 py-1 rounded">ปิดงาน</button>` : ''}
+                <div class="flex justify-between items-center pt-2 border-t border-gray-50">
+                    <span class="font-bold text-gray-800">รวมทั้งหมด</span>
+                    <span class="font-extrabold text-emerald-600 text-lg">฿${o.total.toLocaleString()}</span>
                 </div>
+                 ${o.status === 'pending' ? `
+                 <button onclick="finishOrder(${o.id})" class="mt-3 w-full bg-emerald-500 text-white py-2 rounded-xl font-bold text-sm shadow-md hover:bg-emerald-600 transition">ปิดงาน (เสิร์ฟแล้ว)</button>
+                 ` : ''}
             </div>
         `).join('');
     }
@@ -516,17 +648,25 @@
         if (order) {
             order.status = 'completed';
             saveDB(db);
-            showToast('อัพเดทสถานะแล้ว');
+            showToast('อัพเดทสถานะแล้ว 👍');
         }
     }
 
-    // --- Utilities ---
+    // --- Toast ---
     function showToast(msg, color='green') {
         const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast ${color === 'red' ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-4 rounded-2xl shadow-xl font-bold show`;
+        const msgEl = document.getElementById('toast-message');
+        msgEl.textContent = msg;
+        
+        if (color === 'red') {
+            toast.className = 'toast bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl font-bold flex items-center gap-2 show';
+        } else {
+            toast.className = 'toast bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl font-bold flex items-center gap-2 show';
+        }
+        
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
   </script>
 </body>
 </html>
+
