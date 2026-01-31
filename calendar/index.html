@@ -26,6 +26,7 @@
 
   <input id="name" placeholder="ชื่อ" />
   <input id="phone" placeholder="เบอร์โทร" />
+
   <select id="service">
     <option>ติดตั้งไฟ</option>
     <option>ซ่อมไฟ</option>
@@ -35,13 +36,11 @@
   <input type="date" id="date" />
   <div id="times" class="times"></div>
 
-  <div id="times" class="times"></div>
-
-  <const onclick="submitBooking()">ยืนยันการจอง</button>
+  <button onclick="submitBooking()">ยืนยันการจอง</button>
 </div>
 
 <script>
-const API = "https://weathered-art-f630boy-calendar-api.boyjiza7.workers.dev"
+const API = "https://weathered-art-f630boy-calendar-api.boyjiza7.workers.dev";
 const shop_id = "shop001";
 let selectedTime = null;
 
@@ -54,9 +53,11 @@ const ALL_TIMES = [
 document.getElementById("date").addEventListener("change", loadTimes);
 
 async function loadTimes() {
-  const date = document.getElementById("date").addEventListener("change", loadTimes);
-  const res = aawaitfetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
-  const booked = await res.json(); // ["14:00","15:00"]
+  const date = document.getElementById("date").value;
+  if (!date) return;
+
+  const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
+  const booked = await res.json();
 
   const box = document.getElementById("times");
   box.innerHTML = "";
@@ -65,25 +66,30 @@ async function loadTimes() {
     const div = document.createElement("div");
     div.className = "time";
     div.innerText = t;
-    if (booked.includes(t)) div.classList.add("disabled");
-    div.onclick = () => {
-      document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
-      div.classList.add("active");
-      selectedTime = t;
+
+    if (booked.includes(t)) {
+      div.classList.add("disabled");
+    } else {
+      div.onclick = () => {
+        document.querySelectorAll(".time").forEach(x => x.classList.remove("active"));
+        div.classList.add("active");
+        selectedTime = t;
+      };
     }
+
     box.appendChild(div);
   });
 }
 
 async function submitBooking() {
-  if (!selectedTime) return alert("เลือกเวลา");
+  if (!selectedTime) return alert("กรุณาเลือกเวลา");
 
   const data = {
     shop_id,
-    name: name.value,
-    phone: phone.value,
-    service: service.value,
-    date: date.value,
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    service: document.getElementById("service").value,
+    date: document.getElementById("date").value,
     time: selectedTime
   };
 
@@ -93,8 +99,12 @@ async function submitBooking() {
     body: JSON.stringify(data)
   });
 
-  alert("จองสำเร็จ");
-  location.reload();
+  if (res.ok) {
+    alert("จองสำเร็จ");
+    location.reload();
+  } else {
+    alert("จองไม่สำเร็จ");
+  }
 }
 </script>
 
