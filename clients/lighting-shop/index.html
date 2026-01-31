@@ -1,97 +1,385 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BOY LIGHTING – Smart Light Store</title>
-<style>
-body{
-  margin:0;
-  font-family:system-ui, sans-serif;
-  background:#050505;
-  color:#fff;
-}
-.hero{
-  padding:60px 20px;
-  text-align:center;
-  background:radial-gradient(circle at top, #0ff2, #000 70%);
-}
-.hero h1{
-  font-size:32px;
-  margin-bottom:10px;
-}
-.hero p{
-  color:#aaa;
-}
-.btn{
-  display:inline-block;
-  margin-top:20px;
-  padding:14px 26px;
-  background:#00ffff;
-  color:#000;
-  text-decoration:none;
-  border-radius:10px;
-  font-weight:bold;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:16px;
-  padding:20px;
-}
-.card{
-  background:#111;
-  border-radius:14px;
-  padding:16px;
-  text-align:center;
-}
-.card img{
-  width:100%;
-  border-radius:10px;
-}
-.price{
-  color:#0ff;
-  font-weight:bold;
-}
-footer{
-  text-align:center;
-  padding:30px;
-  color:#666;
-  font-size:12px;
-}
-</style>
-</head>
-<body>
+<!doctype html>
+<html lang="th" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ElectroPro - Electrical Supply Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&amp;family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    * { font-family: 'Prompt', 'Kanit', sans-serif; }
+    
+    /* Claymorphism Styles (คงเดิม) */
+    .clay-card {
+      border-radius: 28px;
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.1),
+        0 6px 12px rgba(0, 0, 0, 0.06),
+        inset 0 2px 6px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.06);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .clay-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); opacity: 0.6;
+    }
+    .clay-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 10px 20px rgba(0, 0, 0, 0.08),
+        inset 0 2px 6px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.06);
+    }
+    .clay-card:active { transform: translateY(-2px) scale(1.01); transition: all 0.1s ease; }
+    
+    .clay-icon { filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2)); animation: iconFloat 3s ease-in-out infinite; }
+    @keyframes iconFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+    
+    .clay-button {
+      border-radius: 50%;
+      box-shadow: 
+        0 12px 32px rgba(236, 72, 153, 0.45),
+        0 6px 12px rgba(0, 0, 0, 0.12),
+        inset 0 2px 8px rgba(255, 255, 255, 0.7),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+    .clay-button:hover {
+      transform: translateY(-8px) scale(1.08);
+      box-shadow: 
+        0 16px 48px rgba(236, 72, 153, 0.6),
+        0 8px 16px rgba(0, 0, 0, 0.15),
+        inset 0 2px 8px rgba(255, 255, 255, 0.7);
+    }
+    
+    .logo-3d { filter: drop-shadow(0 8px 16px rgba(236, 72, 153, 0.35)); }
+    .page-transition { animation: slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(100%) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    
+    .floating { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-8px) rotate(1deg); } 75% { transform: translateY(-4px) rotate(-1deg); } }
+    
+    .search-input {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+      border-radius: 20px; border: 2px solid rgba(236, 72, 153, 0.1); transition: all 0.3s ease;
+    }
+    .search-input:focus-within {
+      box-shadow: 0 8px 32px rgba(236, 72, 153, 0.2), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+      border-color: rgba(236, 72, 153, 0.3);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #ec4899, #f472b6, #fb7185);
+      background-size: 200% 200%; animation: gradientShift 3s ease infinite;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    
+    .spinner {
+      border: 3px solid rgba(236, 72, 153, 0.2); border-top: 3px solid #ec4899;
+      border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .cart-badge {
+      position: absolute; top: -8px; right: -8px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white; font-size: 11px; font-weight: 800; width: 22px; height: 22px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5); animation: cartPulse 2s ease-in-out infinite;
+    }
+    @keyframes cartPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    
+    .menu-filter-btn.active {
+      background: linear-gradient(135deg, #ec4899, #f472b6); color: white;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    }
+    .menu-filter-btn:not(.active) {
+      background: white; color: #6b7280; border: 1px solid #f3f4f6;
+    }
+    
+    @media (max-width: 640px) { .clay-card { border-radius: 20px; } }
+  </style>
+ </head>
+ <body class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #fef3c7 100%);">
+  <div id="app" class="w-full min-h-full pb-28">
+   
+   <div id="loading-state" class="w-full h-screen flex flex-col items-center justify-center">
+    <div class="spinner"></div>
+    <p class="text-gray-500 font-semibold mt-4">กำลังโหลด...</p>
+   </div>
 
-<section class="hero">
-  <h1>BOY LIGHTING</h1>
-  <p>ไฟอัจฉริยะ | ไฟแต่งบ้าน | LED | Smart Home</p>
-  <a class="btn" href="#products">ดูสินค้า</a>
-</section>
+   <div id="dashboard" class="w-full hidden">
+    <header class="w-full px-6 pt-8 pb-6">
+     <div class="flex flex-col items-center mb-6">
+      <div class="logo-3d floating mb-4">
+        <div class="w-32 h-32 rounded-3xl shadow-2xl flex items-center justify-center text-white text-5xl bg-gradient-to-br from-yellow-400 to-orange-500">
+            ⚡
+        </div>
+      </div>
+      <h1 id="shop-name" class="text-3xl font-extrabold gradient-text">ElectroPro Shop</h1>
+      <p id="welcome-text" class="text-gray-600 font-semibold mt-2 text-center px-4">อุปกรณ์ไฟฟ้าครบวงจร 💡</p>
+     </div>
+     
+     <div class="search-input bg-white/90 backdrop-blur-sm p-4 flex items-center gap-3">
+      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      <input type="text" placeholder="ค้นหาหลอดไฟ, สายไฟ, เครื่องมือ..." class="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 font-medium text-base"> 
+      <button class="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:shadow-xl transition-all hover:scale-105"> ค้นหา </button>
+     </div>
+    </header>
 
-<section id="products" class="grid">
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1582719478181-b6932b6c1e52" />
-    <h3>Smart LED Strip</h3>
-    <p class="price">฿1,290</p>
-  </div>
+    <main class="px-6 grid grid-cols-2 gap-5">
+     <div class="clay-card bg-gradient-to-br from-sky-400 via-blue-400 to-blue-500 p-6 cursor-pointer" onclick="showPage('catalog')">
+      <div class="clay-icon mb-4">
+        <svg width="56" height="56" viewbox="0 0 56 56" fill="none">
+         <rect x="18" y="10" width="20" height="24" rx="4" fill="white" opacity="0.95"/>
+         <path d="M23 34V46M33 34V46" stroke="white" stroke-width="4" stroke-linecap="round"/>
+         <circle cx="28" cy="22" r="5" fill="#60a5fa"/>
+       </svg>
+      </div>
+      <h3 class="text-white font-extrabold text-xl leading-tight mb-1">สายไฟ & อุปกรณ์</h3>
+      <p class="text-white/90 text-sm font-semibold">สินค้ากว่า 50+ รายการ</p>
+     </div>
 
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" />
-    <h3>Neon Wall Light</h3>
-    <p class="price">฿890</p>
-  </div>
+     <div class="clay-card bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500 p-6 cursor-pointer relative" onclick="showPage('catalog')">
+      <div class="clay-icon mb-4">
+        <svg width="56" height="56" viewbox="0 0 56 56" fill="none">
+         <path d="M28 48C28 48 34 44 34 38C34 32 30 30 28 10C26 30 22 32 22 38C22 44 28 48 28 48Z" fill="white" opacity="0.95"/>
+         <rect x="24" y="48" width="8" height="6" rx="2" fill="#d97706"/>
+         <circle cx="28" cy="28" r="4" fill="#fbbf24"/>
+       </svg>
+      </div>
+      <h3 class="text-white font-extrabold text-xl leading-tight mb-1">สั่งสินค้า 🛒</h3>
+      <p class="text-white/90 text-sm font-semibold">หลอดไฟ & โคมไฟ</p>
+      <div id="cart-badge-home" class="hidden cart-badge">0</div>
+     </div>
 
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4" />
-    <h3>Desk Light Pro</h3>
-    <p class="price">฿1,590</p>
-  </div>
-</section>
+     <div class="clay-card bg-gradient-to-br from-emerald-400 via-green-400 to-green-500 p-6 cursor-pointer" onclick="alert('ฟีเจอร์จองคิวช่าง กำลังพัฒนา')">
+      <div class="clay-icon mb-4">
+        <svg width="56" height="56" viewbox="0 0 56 56" fill="none">
+         <rect x="24" y="10" width="8" height="36" rx="4" transform="rotate(45 28 28)" fill="white" opacity="0.95"/>
+         <circle cx="16" cy="40" r="5" fill="#22c55e"/>
+         <path d="M38 12L44 18" stroke="white" stroke-width="4" stroke-linecap="round"/>
+       </svg>
+      </div>
+      <h3 class="text-white font-extrabold text-xl leading-tight mb-1">บริการช่าง</h3>
+      <p class="text-white/90 text-sm font-semibold">ติดตั้ง & ซ่อมแซม</p>
+     </div>
 
-<footer>
-  Demo site by Boy Studio • ใช้เพื่อพรีเซนต์ลูกค้า
-</footer>
+     <div class="clay-card bg-gradient-to-br from-rose-400 via-pink-400 to-pink-500 p-6 cursor-pointer" onclick="showPage('catalog')">
+      <div class="clay-icon mb-4">
+       <svg width="56" height="56" viewbox="0 0 56 56" fill="none">
+         <path d="M10 28L28 10L46 28L28 46L10 28Z" fill="white" opacity="0.95"/>
+         <circle cx="28" cy="20" r="3" fill="#f43f5e"/>
+         <text x="28" y="38" text-anchor="middle" fill="#f43f5e" font-size="12" font-weight="bold">%</text>
+       </svg>
+      </div>
+      <h3 class="text-white font-extrabold text-xl leading-tight mb-1">โปรโมชั่น</h3>
+      <p class="text-white/90 text-sm font-semibold">ลดราคาพิเศษ</p>
+     </div>
+    </main>
 
-</body>
+    <section class="px-6 mt-6">
+     <div class="bg-white/70 backdrop-blur-sm rounded-3xl p-5 shadow-lg border border-white/80">
+      <h4 class="font-bold text-gray-800 mb-4 text-lg">🔖 หมวดหมู่ยอดนิยม</h4>
+      <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm">💡 หลอดไฟ LED</span> 
+        <span class="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm">🔌 ปลั๊ก/สวิตช์</span> 
+        <span class="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm">🛠️ เครื่องมือช่าง</span> 
+        <span class="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm">🔋 แบตเตอรี่</span> 
+        <span class="bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm">📏 ท่อร้อยสาย</span>
+      </div>
+     </div>
+    </section>
+
+    <section class="px-6 mt-6">
+     <div class="flex items-center justify-between mb-4">
+      <h4 class="font-bold text-gray-800 text-lg">📦 สถานะคำสั่งซื้อ</h4>
+      <button onclick="showPage('orders-page')" class="text-pink-500 font-bold text-sm hover:text-pink-600">ดูทั้งหมด →</button>
+     </div>
+     <div id="booking-preview" class="space-y-3">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">🚚</div>
+                <div>
+                    <p class="font-bold text-gray-800">Order #8821</p>
+                    <p class="text-xs text-gray-500">กำลังจัดส่ง</p>
+                </div>
+            </div>
+            <span class="text-sm font-bold text-gray-700">฿1,250</span>
+        </div>
+     </div>
+    </section>
+   </div>
+
+   <div id="catalog-page" class="w-full hidden page-transition">
+    <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4 sticky top-0 bg-gradient-to-br from-fdf2f8 to-white z-40">
+      <button onclick="showPage('home')" class="w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
+      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
+      </button>
+     <h2 class="text-2xl font-extrabold text-gray-800 flex-1">สินค้าทั้งหมด 🛒</h2>
+     <button class="w-11 h-11 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform relative">
+      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+      <div id="cart-badge" class="hidden cart-badge">0</div>
+     </button>
+    </header>
+    
+    <div class="px-6 mb-4 flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <button onclick="filterCatalog('all', this)" class="menu-filter-btn active px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all"> ทั้งหมด </button> 
+      <button onclick="filterCatalog('lighting', this)" class="menu-filter-btn px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all"> 💡 แสงสว่าง </button> 
+      <button onclick="filterCatalog('tools', this)" class="menu-filter-btn px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all"> 🛠️ เครื่องมือ </button> 
+      <button onclick="filterCatalog('wiring', this)" class="menu-filter-btn px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all"> 🔌 สายไฟ </button>
+    </div>
+
+    <div id="product-list" class="px-6 space-y-4 pb-24">
+      </div>
+   </div>
+
+   <div id="orders-page" class="w-full hidden page-transition">
+    <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
+      <button onclick="showPage('home')" class="w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
+      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
+      </button>
+     <h2 class="text-2xl font-extrabold text-gray-800">ประวัติการสั่งซื้อ 📋</h2>
+    </header>
+    <div class="px-6 space-y-4">
+        <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h4 class="font-bold text-gray-800">Order #8821</h4>
+                    <p class="text-xs text-gray-500">31 ม.ค. 2026, 10:30 น.</p>
+                </div>
+                <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">กำลังจัดส่ง</span>
+            </div>
+            <div class="border-t border-dashed my-3"></div>
+            <div class="space-y-1">
+                <p class="text-sm text-gray-600 flex justify-between"><span>หลอดไฟ LED 9W (x5)</span> <span>฿450</span></p>
+                <p class="text-sm text-gray-600 flex justify-between"><span>สว่านไฟฟ้าไร้สาย</span> <span>฿800</span></p>
+            </div>
+            <div class="mt-3 pt-2 border-t flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-500">รวมทั้งสิ้น</span>
+                <span class="text-lg font-extrabold text-pink-500">฿1,250</span>
+            </div>
+        </div>
+    </div>
+   </div>
+
+  </div> <script>
+    // --- Mock Data ---
+    const products = [
+      { id: 1, name: "หลอดไฟ LED 9W", price: 90, category: "lighting", image: "💡" },
+      { id: 2, name: "โคมไฟดาวน์ไลท์", price: 150, category: "lighting", image: "🔅" },
+      { id: 3, name: "สว่านไร้สาย 12V", price: 890, category: "tools", image: "🛠️" },
+      { id: 4, name: "ไขควงวัดไฟ", price: 120, category: "tools", image: "🔧" },
+      { id: 5, name: "สายไฟ VAF 2x1.5", price: 450, category: "wiring", image: "➰" },
+      { id: 6, name: "ปลั๊กพ่วง 3 ช่อง", price: 299, category: "wiring", image: "🔌" },
+      { id: 7, name: "หลอดไฟยาว T8", price: 110, category: "lighting", image: "🔦" },
+      { id: 8, name: "เทปพันสายไฟ", price: 25, category: "tools", image: "📼" },
+    ];
+
+    let cartCount = 0;
+
+    // --- App Logic ---
+    window.onload = function() {
+        setTimeout(() => {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('fade-in');
+            renderProducts(products);
+        }, 800);
+    };
+
+    function showPage(pageId) {
+        // Hide all pages
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('catalog-page').classList.add('hidden');
+        document.getElementById('orders-page').classList.add('hidden');
+
+        // Show selected
+        if (pageId === 'home') {
+            document.getElementById('dashboard').classList.remove('hidden');
+        } else if (pageId === 'catalog') {
+            document.getElementById('catalog-page').classList.remove('hidden');
+        } else if (pageId === 'orders-page') {
+            document.getElementById('orders-page').classList.remove('hidden');
+        }
+        
+        window.scrollTo(0,0);
+    }
+
+    function renderProducts(items) {
+        const container = document.getElementById('product-list');
+        container.innerHTML = '';
+        
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-3xl p-4 shadow-lg border border-gray-100 flex items-center gap-4 fade-in menu-item relative overflow-hidden';
+            card.innerHTML = `
+                <div class="w-20 h-20 rounded-2xl bg-gray-50 flex items-center justify-center text-4xl shadow-inner">
+                    ${item.image}
+                </div>
+                <div class="flex-1">
+                    <h5 class="font-bold text-gray-800 text-lg leading-tight mb-1">${item.name}</h5>
+                    <p class="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wide">${item.category}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl font-extrabold text-pink-500">฿${item.price}</span>
+                        <button onclick="addToCart(this)" class="bg-gray-900 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-pink-500 transition-colors shadow-lg active:scale-90">
+                            +
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function filterCatalog(category, btnElement) {
+        // Update Buttons
+        document.querySelectorAll('.menu-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('bg-white', 'text-gray-500'); // Reset style
+        });
+        btnElement.classList.add('active');
+        btnElement.classList.remove('bg-white', 'text-gray-500');
+
+        // Filter Data
+        const filtered = category === 'all' 
+            ? products 
+            : products.filter(p => p.category === category);
+        
+        renderProducts(filtered);
+    }
+
+    function addToCart(btn) {
+        // Visual Feedback
+        btn.classList.add('bg-pink-500', 'scale-110');
+        setTimeout(() => btn.classList.remove('scale-110'), 150);
+
+        // Update Counter
+        cartCount++;
+        updateCartBadges();
+
+        // Toast Notification (Simple)
+        // In real app, create a toast element
+    }
+
+    function updateCartBadges() {
+        const badges = document.querySelectorAll('.cart-badge');
+        badges.forEach(badge => {
+            badge.textContent = cartCount;
+            if (cartCount > 0) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            }
+        });
+    }
+  </script>
+ </body>
 </html>
