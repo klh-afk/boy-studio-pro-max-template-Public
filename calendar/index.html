@@ -1,113 +1,99 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ระบบจองคิว</title>
-
-<style>
-body {
-  font-family: system-ui;
-  margin: 0;
-  background: #0f0f0f;
-  color: #fff;
-}
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  padding: 20px;
-}
-.day {
-  background: #1f1f1f;
-  padding: 12px;
-  text-align: center;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.day.booked {
-  background: #444;
-  text-decoration: line-through;
-}
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-.modal-box {
-  background: #111;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-}
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-}
-button {
-  background: #00e0ff;
-  border: none;
-  font-weight: bold;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>จองคิวบริการ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui; background:#f7f7f7; margin:0; padding:20px; }
+    .box { background:#fff; border-radius:12px; padding:20px; max-width:420px; margin:auto; }
+    h2 { margin-top:0 }
+    input, select, button {
+      width:100%; padding:12px; margin:6px 0;
+      border-radius:8px; border:1px solid #ddd; font-size:16px;
+    }
+    button { background:#000; color:#fff; border:none; }
+    .times { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+    .time { padding:10px; border-radius:8px; text-align:center; border:1px solid #ccc; cursor:pointer; }
+    .disabled { opacity:0.3; pointer-events:none; }
+    .active { background:#000; color:#fff; }
+  </style>
 </head>
 <body>
 
-<h2 style="padding:20px">เลือกวันจอง</h2>
+<div class="box">
+  <h2>จองคิวบริการ</h2>
 
-<div id="calendar" class="calendar"></div>
+  <input id="name" placeholder="ชื่อ" />
+  <input id="phone" placeholder="เบอร์โทร" />
+  <select id="service">
+    <option>ติดตั้งไฟ</option>
+    <option>ซ่อมไฟ</option>
+    <option>ตรวจระบบ</option>
+  </select>
 
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3 id="selectedDate"></h3>
-    <input id="name" placeholder="ชื่อลูกค้า" />
-    <input id="phone" placeholder="เบอร์โทร" />
-    <select id="time">
-      <!-- ร้านค้าปรับเวลาได้ตรงนี้ -->
-      <option>09:00</option>
-      <option>10:00</option>
-      <option>11:00</option>
-      <option>13:00</option>
-      <option>14:00</option>
-      <option>15:00</option>
-      <option>16:00</option>
-    </select>
-    <button onclick="saveBooking()">ยืนยันการจอง</button>
-    <button onclick="closeModal()">ยกเลิก</button>
-  </div>
+  <input type="date" id="date" />
+
+  <div id="times" class="times"></div>
+
+  <button onclick="submitBooking()">ยืนยันการจอง</button>
 </div>
 
 <script>
-const calendar = document.getElementById("calendar");
-const modal = document.getElementById("modal");
-const selectedDateEl = document.getElementById("selectedDate");
-let selectedDate = "";
+const API = "https://YOUR-WORKER-URL.workers.dev";
+const shop_id = "shop001";
+let selectedTime = null;
 
-const daysInMonth = 31;
-for (let i = 1; i <= daysInMonth; i++) {
-  const d = document.createElement("div");
-  d.className = "day";
-  d.innerText = i;
-  d.onclick = () => openModal(i);
-  calendar.appendChild(d);
+const ALL_TIMES = [
+  "09:00","10:00","11:00",
+  "13:00","14:00","15:00",
+  "16:00","17:00"
+];
+
+document.getElementById("date").addEventListener("change", loadTimes);
+
+async function loadTimes() {
+  const date = date.value;
+  const res = await fetch(`${API}/bookings?shop_id=${shop_id}&date=${date}`);
+  const booked = await res.json(); // ["14:00","15:00"]
+
+  const box = document.getElementById("times");
+  box.innerHTML = "";
+
+  ALL_TIMES.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "time";
+    div.innerText = t;
+    if (booked.includes(t)) div.classList.add("disabled");
+    div.onclick = () => {
+      document.querySelectorAll(".time").forEach(x=>x.classList.remove("active"));
+      div.classList.add("active");
+      selectedTime = t;
+    }
+    box.appendChild(div);
+  });
 }
 
-function openModal(day) {
-  selectedDate = `2026-01-${String(day).padStart(2,'0')}`;
-  selectedDateEl.innerText = `จองวันที่ ${selectedDate}`;
-  modal.style.display = "flex";
-}
-function closeModal() {
-  modal.style.display = "none";
-}
-function saveBooking() {
-  alert("ระบบ Demo: บันทึกสำเร็จ (พร้อมต่อ API ได้)");
-  closeModal();
+async function submitBooking() {
+  if (!selectedTime) return alert("เลือกเวลา");
+
+  const data = {
+    shop_id,
+    name: name.value,
+    phone: phone.value,
+    service: service.value,
+    date: date.value,
+    time: selectedTime
+  };
+
+  const res = await fetch(`${API}/book`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(data)
+  });
+
+  alert("จองสำเร็จ");
+  location.reload();
 }
 </script>
 
