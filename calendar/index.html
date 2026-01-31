@@ -1,89 +1,69 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<title>ระบบจองคิวงาน</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Boystudio Booking Calendar</title>
+
 <style>
-body{background:#000;color:#fff;font-family:sans-serif;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.day{padding:14px;border-radius:8px;text-align:center;cursor:pointer}
-.free{background:#14532d}
-.booked{background:#7f1d1d}
-form{margin-top:20px}
-input,select,textarea,button{width:100%;padding:10px;margin-top:8px;border-radius:6px;border:none}
-button{background:#0ff;color:#000;font-weight:bold}
-.hidden{display:none}
+body{font-family:sans-serif;background:#f4f6fb;margin:0;padding:20px}
+.card{max-width:480px;margin:auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+h2{text-align:center}
+input,textarea,button{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:1px solid #ddd}
+button{background:#111;color:#fff;font-weight:bold}
+.item{background:#f1f1f1;padding:10px;border-radius:8px;margin-top:6px;font-size:14px}
+small{color:#888}
 </style>
 </head>
+
 <body>
 
-<h2>📅 ปฏิทินจองคิว</h2>
-<div id="calendar" class="grid"></div>
+<div class="card">
+  <h2>📅 จองคิวงาน</h2>
 
-<div id="formBox" class="hidden">
-  <h3>จองวันที่ <span id="selectedDate"></span></h3>
-  <form onsubmit="saveBooking(event)">
-    <input id="name" placeholder="ชื่อ" required>
-    <input id="phone" placeholder="เบอร์โทร" required>
-    <input id="line" placeholder="LINE ID">
-    <select id="service">
-      <option>ติดตั้ง</option>
-      <option>ซ่อม</option>
-      <option>ดูหน้างาน</option>
-      <option>อื่นๆ</option>
-    </select>
-    <textarea id="note" placeholder="หมายเหตุ"></textarea>
-    <button type="submit">ยืนยันการจอง</button>
-  </form>
+  <input id="date" type="date">
+  <input id="name" placeholder="ชื่อผู้จอง">
+  <input id="phone" placeholder="เบอร์โทร">
+  <textarea id="note" placeholder="รายละเอียดงาน"></textarea>
+
+  <button onclick="add()">บันทึกคิว</button>
+
+  <h3>รายการจอง</h3>
+  <div id="list"></div>
+
+  <small>* โหมด demo (ใช้โชว์ลูกค้า / พรีเซนต์งาน)</small>
 </div>
 
 <script>
-const dbKey = "boystudio-bookings";
-let bookings = JSON.parse(localStorage.getItem(dbKey)) || [];
-let selectedDate = null;
+let bookings = []
 
-function renderCalendar(){
-  const cal = document.getElementById("calendar");
-  cal.innerHTML = "";
-  for(let d=1; d<=28; d++){
-    const date = "2026-02-" + String(d).padStart(2,"0");
-    const div = document.createElement("div");
-    const booked = bookings.find(b => b.date === date);
-    div.className = "day " + (booked ? "booked" : "free");
-    div.innerText = d;
-    if(!booked){
-      div.onclick = () => openForm(date);
-    }
-    cal.appendChild(div);
-  }
+fetch('./db/bookings.json')
+  .then(r=>r.json())
+  .then(d=>{ bookings=d; render() })
+
+function render(){
+  list.innerHTML=''
+  bookings.forEach(b=>{
+    list.innerHTML += `
+      <div class="item">
+        <b>${b.date}</b><br>
+        ${b.name} (${b.phone})<br>
+        <small>${b.note}</small>
+      </div>`
+  })
 }
 
-function openForm(date){
-  selectedDate = date;
-  document.getElementById("selectedDate").innerText = date;
-  document.getElementById("formBox").classList.remove("hidden");
-  window.scrollTo(0, document.body.scrollHeight);
-}
-
-function saveBooking(e){
-  e.preventDefault();
+function add(){
+  if(!date.value || !name.value) return alert("กรอกข้อมูลก่อน")
   bookings.push({
-    date: selectedDate,
-    name: name.value,
-    phone: phone.value,
-    line: line.value,
-    service: service.value,
-    note: note.value,
-    time: new Date().toISOString()
-  });
-  localStorage.setItem(dbKey, JSON.stringify(bookings));
-  alert("จองสำเร็จ!");
-  document.getElementById("formBox").classList.add("hidden");
-  renderCalendar();
+    date:date.value,
+    name:name.value,
+    phone:phone.value,
+    note:note.value
+  })
+  render()
+  alert("บันทึกแล้ว (demo)")
 }
-
-renderCalendar();
 </script>
 
 </body>
