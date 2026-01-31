@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOY LIGHTING – Smart Light Store</title>
+<style>
+body{
+  margin:0;
+  font-family:system-ui, sans-serif;
+  background:#050505;
+  color:#fff;
+}
+.hero{
+  padding:60px 20px;
+  text-align:center;
+  background:radial-gradient(circle at top, #0ff2, #000 70%);
+}
+.hero h1{
+  font-size:32px;
+  margin-bottom:10px;
+}
+.hero p{
+  color:#aaa;
+}
+.btn{
+  display:inline-block;
+  margin-top:20px;
+  padding:14px 26px;
+  background:#00ffff;
+  color:#000;
+  text-decoration:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;
+  padding:20px;
+}
+.card{
+  background:#111;
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+}
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+.price{
+  color:#0ff;
+  font-weight:bold;
+}
+footer{
+  text-align:center;
+  padding:30px;
+  color:#666;
+  font-size:12px;
+}
+</style>
+</head>
+<body>
 
+<section class="hero">
+  <h1>BOY LIGHTING</h1>
+  <p>ไฟอัจฉริยะ | ไฟแต่งบ้าน | LED | Smart Home</p>
+  <a class="btn" href="#products">ดูสินค้า</a>
+</section>
+
+<section id="products" class="grid">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1582719478181-b6932b6c1e52" />
+    <h3>Smart LED Strip</h3>
+    <p class="price">฿1,290</p>
+  </div>
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" />
+    <h3>Neon Wall Light</h3>
+    <p class="price">฿890</p>
+  </div>
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4" />
+    <h3>Desk Light Pro</h3>
+    <p class="price">฿1,590</p>
+  </div>
+</section>
+
+<footer>
+  Demo site by Boy Studio • ใช้เพื่อพรีเซนต์ลูกค้า
+</footer>
+
+</body>
+</html>
