@@ -2,67 +2,112 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<title>ระบบจองคิวงาน</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ระบบจองคิว</title>
 
 <style>
-body{font-family:sans-serif;background:#f4f6fb;margin:0;padding:20px}
-.card{max-width:480px;margin:auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-h2{text-align:center}
-input,textarea,button{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:1px solid #ddd}
-button{background:#111;color:#fff;font-weight:bold}
-.item{background:#f1f1f1;padding:10px;border-radius:8px;margin-top:6px;font-size:14px}
-small{color:#888}
+body {
+  font-family: system-ui;
+  margin: 0;
+  background: #0f0f0f;
+  color: #fff;
+}
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  padding: 20px;
+}
+.day {
+  background: #1f1f1f;
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.day.booked {
+  background: #444;
+  text-decoration: line-through;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.modal-box {
+  background: #111;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+}
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+}
+button {
+  background: #00e0ff;
+  border: none;
+  font-weight: bold;
+}
 </style>
 </head>
-
 <body>
 
-<div class="card">
-  <h2>📅 จองคิวงาน</h2>
+<h2 style="padding:20px">เลือกวันจอง</h2>
 
-  <input id="date" type="date">
-  <input id="name" placeholder="ชื่อผู้จอง">
-  <input id="phone" placeholder="เบอร์โทร">
-  <textarea id="note" placeholder="รายละเอียดงาน"></textarea>
+<div id="calendar" class="calendar"></div>
 
-  <button onclick="add()">บันทึกคิว</button>
-
-  <h3>รายการจอง</h3>
-  <div id="list"></div>
-
-  <small>* โหมด demo (ใช้โชว์ลูกค้า / พรีเซนต์งาน)</small>
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="selectedDate"></h3>
+    <input id="name" placeholder="ชื่อลูกค้า" />
+    <input id="phone" placeholder="เบอร์โทร" />
+    <select id="time">
+      <!-- ร้านค้าปรับเวลาได้ตรงนี้ -->
+      <option>09:00</option>
+      <option>10:00</option>
+      <option>11:00</option>
+      <option>13:00</option>
+      <option>14:00</option>
+      <option>15:00</option>
+      <option>16:00</option>
+    </select>
+    <button onclick="saveBooking()">ยืนยันการจอง</button>
+    <button onclick="closeModal()">ยกเลิก</button>
+  </div>
 </div>
 
 <script>
-let bookings = []
+const calendar = document.getElementById("calendar");
+const modal = document.getElementById("modal");
+const selectedDateEl = document.getElementById("selectedDate");
+let selectedDate = "";
 
-fetch('./db/bookings.json')
-  .then(r=>r.json())
-  .then(d=>{ bookings=d; render() })
-
-function render(){
-  list.innerHTML=''
-  bookings.forEach(b=>{
-    list.innerHTML += `
-      <div class="item">
-        <b>${b.date}</b><br>
-        ${b.name} (${b.phone})<br>
-        <small>${b.note}</small>
-      </div>`
-  })
+const daysInMonth = 31;
+for (let i = 1; i <= daysInMonth; i++) {
+  const d = document.createElement("div");
+  d.className = "day";
+  d.innerText = i;
+  d.onclick = () => openModal(i);
+  calendar.appendChild(d);
 }
 
-function add(){
-  if(!date.value || !name.value) return alert("กรอกข้อมูลก่อน")
-  bookings.push({
-    date:date.value,
-    name:name.value,
-    phone:phone.value,
-    note:note.value
-  })
-  render()
-  alert("บันทึกแล้ว (demo)")
+function openModal(day) {
+  selectedDate = `2026-01-${String(day).padStart(2,'0')}`;
+  selectedDateEl.innerText = `จองวันที่ ${selectedDate}`;
+  modal.style.display = "flex";
+}
+function closeModal() {
+  modal.style.display = "none";
+}
+function saveBooking() {
+  alert("ระบบ Demo: บันทึกสำเร็จ (พร้อมต่อ API ได้)");
+  closeModal();
 }
 </script>
 
