@@ -1,0 +1,540 @@
+ต้องขออภัยจริงๆ ครับที่ระบบของผมยังไม่สามารถสร้างไฟล์ Word (.docx) ให้ดาวน์โหลดได้โดยตรงครับ (ผมทำได้เพียงส่งข้อความตัวอักษร)
+เพื่อชดเชยความไม่สะดวกและแก้ปัญหา "ข้อผิดพลาด" ของโค้ดเดิม ผมได้ แก้ไขโค้ดให้ใหม่ เสร็จเรียบร้อยแล้วครับ
+สิ่งที่ผมแก้ให้ในเวอร์ชันนี้:
+ * ลบ SDK ที่ทำให้ Error ออก: ไม่ต้องใช้ไฟล์ภายนอกแล้ว
+ * ใช้ระบบ Save ในตัว (LocalStorage): ข้อมูลการจองและออเดอร์จะถูกบันทึกไว้ใน Browser ของคุณจริงๆ (ปิดแล้วเปิดใหม่ข้อมูลไม่หาย)
+ * รวมทุกอย่างในไฟล์เดียว: ก๊อปปี้ไปวางแล้วใช้ได้เลย
+ท่านสามารถ กดปุ่ม Copy ที่มุมขวาบนของกล่องโค้ดด้านล่าง แล้วนำไปวางในโปรแกรม Notepad แล้วบันทึกเป็นชื่อ index.html เพื่อเปิดใช้งานได้เลยครับ (หรือจะวางใน Word เพื่อเก็บไว้ก่อนก็ได้ครับ)
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phutoy Ployview - Resort Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&amp;family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    /* CSS Styles */
+    body { box-sizing: border-box; font-family: 'Prompt', 'Kanit', sans-serif; background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #fef3c7 100%); }
+    .clay-card { border-radius: 28px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.06), inset 0 2px 6px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.06); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
+    .clay-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); opacity: 0.6; }
+    .clay-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.06); }
+    .clay-button { border-radius: 50%; box-shadow: 0 12px 32px rgba(236, 72, 153, 0.45), 0 6px 12px rgba(0, 0, 0, 0.12), inset 0 2px 8px rgba(255, 255, 255, 0.7), inset 0 -2px 8px rgba(0, 0, 0, 0.1); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
+    .clay-button:hover { transform: translateY(-8px) scale(1.08); box-shadow: 0 16px 48px rgba(236, 72, 153, 0.6), 0 8px 16px rgba(0, 0, 0, 0.15), inset 0 2px 8px rgba(255, 255, 255, 0.7); }
+    .nav-icon { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
+    .nav-icon:hover { transform: translateY(-4px) scale(1.15); }
+    .nav-icon.active { color: #ec4899; }
+    .bottom-nav { box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.12), inset 0 2px 6px rgba(255, 255, 255, 0.95); border-radius: 36px 36px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.8); }
+    .logo-3d { filter: drop-shadow(0 8px 16px rgba(236, 72, 153, 0.35)); }
+    .floating { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-8px) rotate(1deg); } 75% { transform: translateY(-4px) rotate(-1deg); } }
+    .booking-status-pending { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+    .booking-status-confirmed { background: linear-gradient(135deg, #10b981, #059669); }
+    .calendar-day:hover:not(.disabled):not(.selected) { background: linear-gradient(135deg, #ec4899, #f472b6); color: white; transform: scale(1.15); }
+    .calendar-day.selected { background: linear-gradient(135deg, #ec4899, #f472b6); color: white; }
+    .toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px); z-index: 1000; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .spinner { border: 3px solid rgba(236, 72, 153, 0.2); border-top: 3px solid #ec4899; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  </style>
+</head>
+<body class="h-full w-full overflow-auto pb-28">
+
+  <div id="app" class="w-full min-h-full">
+    <div id="loading-state" class="w-full h-screen flex flex-col items-center justify-center">
+      <div class="spinner"></div>
+      <p class="text-gray-500 font-semibold mt-4">กำลังโหลด...</p>
+    </div>
+
+    <div id="dashboard" class="w-full hidden fade-in">
+      <header class="w-full px-6 pt-8 pb-6">
+        <div class="flex flex-col items-center mb-6">
+          <div class="logo-3d floating mb-4">
+            <div class="w-32 h-32 rounded-3xl shadow-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white text-4xl">PP</div>
+          </div>
+          <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Phutoy Ployview</h1>
+          <p class="text-gray-600 font-semibold mt-2 text-center">ยินดีต้อนรับสู่ความผ่อนคลาย ✨</p>
+        </div>
+      </header>
+
+      <main class="px-6 grid grid-cols-2 gap-5">
+        <div class="clay-card bg-gradient-to-br from-sky-400 via-blue-400 to-blue-500 p-6 cursor-pointer text-white" onclick="showPage('rooms')">
+          <div class="text-4xl mb-4">🏠</div>
+          <h3 class="font-extrabold text-xl leading-tight mb-1">ห้องพัก</h3>
+          <p class="text-white/90 text-sm font-semibold">สำรวจ 4 ห้อง</p>
+        </div>
+        <div class="clay-card bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500 p-6 cursor-pointer text-white" onclick="showPage('food-order')">
+          <div class="text-4xl mb-4">🍽️</div>
+          <h3 class="font-extrabold text-xl leading-tight mb-1">สั่งอาหาร</h3>
+          <p class="text-white/90 text-sm font-semibold">เมนูอร่อย</p>
+        </div>
+        <div class="clay-card bg-gradient-to-br from-emerald-400 via-green-400 to-green-500 p-6 cursor-pointer text-white" onclick="showPage('activities')">
+          <div class="text-4xl mb-4">🏊</div>
+          <h3 class="font-extrabold text-xl leading-tight mb-1">กิจกรรม</h3>
+          <p class="text-white/90 text-sm font-semibold">พักผ่อน</p>
+        </div>
+        <div class="clay-card bg-gradient-to-br from-rose-400 via-pink-400 to-pink-500 p-6 cursor-pointer text-white" onclick="showPage('offers')">
+          <div class="text-4xl mb-4">🎁</div>
+          <h3 class="font-extrabold text-xl leading-tight mb-1">โปรโมชั่น</h3>
+          <p class="text-white/90 text-sm font-semibold">ดีลพิเศษ</p>
+        </div>
+      </main>
+
+      <section class="px-6 mt-6">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-bold text-gray-800 text-lg">📅 การจองล่าสุด</h4>
+          <button onclick="showPage('bookings')" class="text-pink-500 font-bold text-sm">ดูทั้งหมด →</button>
+        </div>
+        <div id="booking-preview" class="space-y-3"></div>
+      </section>
+    </div>
+
+    <div id="rooms-page" class="w-full hidden fade-in">
+        <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800">เลือกห้องพัก</h2>
+        </header>
+        <div class="px-6 space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('ภูทอย 1', 2500)">
+                <h4 class="font-bold text-lg text-gray-800">🏔️ ภูทอย 1</h4>
+                <p class="text-gray-500 text-sm">วิวภูเขา • เตียงควีน</p>
+                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('ภูทอย 2', 2500)">
+                <h4 class="font-bold text-lg text-gray-800">⛰️ ภูทอย 2</h4>
+                <p class="text-gray-500 text-sm">วิวภูเขา • เตียงคิง</p>
+                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('พลอยวิว 1', 2500)">
+                <h4 class="font-bold text-lg text-gray-800">💎 พลอยวิว 1</h4>
+                <p class="text-gray-500 text-sm">วิวสวน • เตียงควีน</p>
+                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-md border cursor-pointer" onclick="selectRoom('พลอยวิว 2', 2500)">
+                <h4 class="font-bold text-lg text-gray-800">✨ พลอยวิว 2</h4>
+                <p class="text-gray-500 text-sm">วิวสวน • เตียงคิง</p>
+                <div class="text-pink-500 font-extrabold text-xl mt-2">฿2,500 <span class="text-xs text-gray-400">/คืน</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="booking-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-6">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 fade-in shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between mb-4">
+                <h3 class="text-xl font-bold">จองห้องพัก</h3>
+                <button onclick="hideBookingModal()" class="text-gray-500 font-bold">✕</button>
+            </div>
+            <div class="mb-4 bg-pink-50 p-3 rounded-xl">
+                <p class="text-xs text-gray-500">ห้องที่เลือก</p>
+                <p id="modal-room-name" class="font-bold text-lg"></p>
+                <p id="modal-room-price" class="text-pink-500 font-bold"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-1">ชื่อผู้จอง</label>
+                <input type="text" id="guest-name" class="w-full border-2 border-gray-200 rounded-xl p-3" placeholder="ชื่อ-นามสกุล">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-1">วันที่เข้าพัก (Check-in)</label>
+                <input type="date" id="check-in-date" class="w-full border-2 border-gray-200 rounded-xl p-3" onchange="calculateTotal()">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-1">วันที่ออก (Check-out)</label>
+                <input type="date" id="check-out-date" class="w-full border-2 border-gray-200 rounded-xl p-3" onchange="calculateTotal()">
+            </div>
+            <div class="flex justify-between items-center mb-6">
+                <span class="font-bold">ราคารวม</span>
+                <span id="total-price" class="text-2xl font-extrabold text-pink-500">฿0</span>
+            </div>
+            <button onclick="confirmBooking()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-xl font-bold shadow-lg">ยืนยันการจอง</button>
+        </div>
+    </div>
+
+    <div id="food-order-page" class="w-full hidden fade-in">
+         <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4 sticky top-0 bg-white z-10">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white border rounded-full shadow flex items-center justify-center">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800 flex-1">สั่งอาหาร</h2>
+            <div class="relative" onclick="showCart()">
+                <div class="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white">🛒</div>
+                <div id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full hidden">0</div>
+            </div>
+        </header>
+        <div id="menu-list" class="px-6 pb-6 space-y-3">
+            </div>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 hidden items-end justify-center z-50">
+        <div class="bg-white rounded-t-3xl w-full max-w-md p-6 fade-in shadow-2xl h-[80vh] flex flex-col">
+            <div class="flex justify-between mb-4">
+                <h3 class="text-xl font-bold">ตะกร้าสินค้า</h3>
+                <button onclick="hideCart()" class="text-gray-500 font-bold">✕</button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto space-y-3"></div>
+            <div class="pt-4 border-t">
+                 <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold">รวมทั้งหมด</span>
+                    <span id="cart-total" class="text-2xl font-extrabold text-pink-500">฿0</span>
+                </div>
+                <input type="text" id="order-room-number" placeholder="ระบุห้องพัก (เช่น ภูทอย 1)" class="w-full border-2 border-gray-200 rounded-xl p-3 mb-3">
+                <button onclick="confirmOrder()" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold shadow-lg">สั่งเลย</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bookings-page" class="w-full hidden fade-in">
+        <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800">รายการจอง</h2>
+        </header>
+        <div id="all-bookings-list" class="px-6 space-y-4 pb-24"></div>
+    </div>
+     <div id="manage-orders-page" class="w-full hidden fade-in">
+        <header class="w-full px-6 pt-8 pb-4 flex items-center gap-4">
+            <button onclick="showPage('home')" class="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">🔙</button>
+            <h2 class="text-2xl font-extrabold text-gray-800">จัดการออเดอร์</h2>
+        </header>
+        <div id="all-orders-list" class="px-6 space-y-4 pb-24"></div>
+    </div>
+
+    <div id="activities-page" class="w-full hidden fade-in p-6 text-center">
+        <button onclick="showPage('home')" class="mb-4">🔙 กลับ</button>
+        <h2 class="text-2xl font-bold">หน้านี้กำลังปรับปรุง</h2>
+    </div>
+    <div id="offers-page" class="w-full hidden fade-in p-6 text-center">
+        <button onclick="showPage('home')" class="mb-4">🔙 กลับ</button>
+        <h2 class="text-2xl font-bold">หน้านี้กำลังปรับปรุง</h2>
+    </div>
+
+    <nav class="bottom-nav fixed bottom-0 w-full bg-white/95 backdrop-blur flex justify-around p-4 z-40">
+        <button onclick="showPage('home')" class="text-xs font-bold flex flex-col items-center text-pink-500">🏠 หน้าหลัก</button>
+        <button onclick="showPage('manage-orders')" class="text-xs font-bold flex flex-col items-center text-gray-400">📋 ออเดอร์</button>
+        <div class="w-12"></div> <button onclick="showPage('bookings')" class="text-xs font-bold flex flex-col items-center text-gray-400">📅 การจอง</button>
+        <button onclick="alert('ติดต่อ 02-123-4567')" class="text-xs font-bold flex flex-col items-center text-gray-400">📞 ติดต่อ</button>
+    </nav>
+    <button onclick="showPage('rooms')" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 clay-button w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white text-2xl z-50">➕</button>
+    
+    <div id="toast" class="toast bg-green-500 text-white px-6 py-4 rounded-2xl shadow-xl font-bold">
+        บันทึกสำเร็จ!
+    </div>
+
+  </div>
+
+  <script>
+    // --- Data Management (LocalStorage Replacement) ---
+    const DB_KEY = 'phutoy_data_v1';
+    
+    function getDB() {
+        const data = localStorage.getItem(DB_KEY);
+        return data ? JSON.parse(data) : { bookings: [], orders: [] };
+    }
+
+    function saveDB(data) {
+        localStorage.setItem(DB_KEY, JSON.stringify(data));
+        refreshData();
+    }
+
+    // --- State & Variables ---
+    let selectedRoomData = null;
+    let cart = [];
+    
+    const menuItems = [
+        { name: 'หมูกระทะ (ชุด)', price: 590, icon: '🍲' },
+        { name: 'ข้าวผัดปู', price: 120, icon: '🦀' },
+        { name: 'ต้มยำกุ้ง', price: 150, icon: '🦐' },
+        { name: 'น้ำเปล่า', price: 20, icon: '💧' },
+        { name: 'โค้ก', price: 30, icon: '🥤' },
+        { name: 'เฟรนช์ฟรายส์', price: 79, icon: '🍟' }
+    ];
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('dashboard').classList.remove('hidden');
+            refreshData();
+            renderMenu();
+        }, 800);
+    });
+
+    function refreshData() {
+        renderBookingPreview();
+        renderAllBookings();
+        renderAllOrders();
+    }
+
+    // --- Navigation ---
+    function showPage(pageId) {
+        // Hide all pages
+        ['dashboard', 'rooms-page', 'food-order-page', 'bookings-page', 'manage-orders-page', 'activities-page', 'offers-page'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        
+        // Show target page
+        if (pageId === 'home') document.getElementById('dashboard').classList.remove('hidden');
+        else if (pageId === 'rooms') document.getElementById('rooms-page').classList.remove('hidden');
+        else if (pageId === 'bookings') document.getElementById('bookings-page').classList.remove('hidden');
+        else if (pageId === 'manage-orders') document.getElementById('manage-orders-page').classList.remove('hidden');
+        else if (pageId === 'food-order') document.getElementById('food-order-page').classList.remove('hidden');
+        else if (pageId === 'activities') document.getElementById('activities-page').classList.remove('hidden');
+        else if (pageId === 'offers') document.getElementById('offers-page').classList.remove('hidden');
+    }
+
+    // --- Booking Logic ---
+    function selectRoom(name, price) {
+        selectedRoomData = { name, price };
+        document.getElementById('modal-room-name').textContent = name;
+        document.getElementById('modal-room-price').textContent = `฿${price.toLocaleString()}`;
+        document.getElementById('booking-modal').classList.remove('hidden');
+        document.getElementById('booking-modal').classList.add('flex');
+    }
+
+    function hideBookingModal() {
+        document.getElementById('booking-modal').classList.add('hidden');
+        document.getElementById('booking-modal').classList.remove('flex');
+        document.getElementById('guest-name').value = '';
+        document.getElementById('check-in-date').value = '';
+        document.getElementById('check-out-date').value = '';
+        document.getElementById('total-price').textContent = '฿0';
+    }
+
+    function calculateTotal() {
+        const checkIn = new Date(document.getElementById('check-in-date').value);
+        const checkOut = new Date(document.getElementById('check-out-date').value);
+        
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+            const total = nights * selectedRoomData.price;
+            document.getElementById('total-price').textContent = `฿${total.toLocaleString()}`;
+        } else {
+            document.getElementById('total-price').textContent = '฿0';
+        }
+    }
+
+    function confirmBooking() {
+        const name = document.getElementById('guest-name').value;
+        const checkIn = document.getElementById('check-in-date').value;
+        const checkOut = document.getElementById('check-out-date').value;
+        const priceText = document.getElementById('total-price').textContent;
+
+        if (!name || !checkIn || !checkOut || priceText === '฿0') {
+            alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+            return;
+        }
+
+        const db = getDB();
+        db.bookings.push({
+            id: Date.now(),
+            room: selectedRoomData.name,
+            guest: name,
+            checkIn,
+            checkOut,
+            total: priceText,
+            status: 'pending'
+        });
+        saveDB(db);
+        
+        hideBookingModal();
+        showToast('จองห้องพักสำเร็จ!');
+    }
+
+    function renderBookingPreview() {
+        const db = getDB();
+        const container = document.getElementById('booking-preview');
+        
+        if (db.bookings.length === 0) {
+            container.innerHTML = '<p class="text-gray-400 text-center text-sm">ยังไม่มีการจอง</p>';
+            return;
+        }
+
+        const latest = db.bookings.slice(-2).reverse(); // Show last 2
+        container.innerHTML = latest.map(b => `
+            <div class="bg-white p-3 rounded-xl shadow-sm border flex justify-between items-center">
+                <div>
+                    <div class="font-bold text-gray-800">${b.room}</div>
+                    <div class="text-xs text-gray-500">${b.guest} • ${b.checkIn}</div>
+                </div>
+                <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg">รอเข้าพัก</span>
+            </div>
+        `).join('');
+    }
+
+    function renderAllBookings() {
+        const db = getDB();
+        const container = document.getElementById('all-bookings-list');
+        if (db.bookings.length === 0) {
+            container.innerHTML = '<div class="text-center py-10 text-gray-400">ว่างเปล่า</div>';
+            return;
+        }
+        container.innerHTML = db.bookings.slice().reverse().map(b => `
+            <div class="bg-white p-4 rounded-xl shadow-md border mb-3">
+                <div class="flex justify-between mb-2">
+                    <h4 class="font-bold text-lg">${b.room}</h4>
+                    <span class="text-pink-500 font-bold">${b.total}</span>
+                </div>
+                <p class="text-gray-600">👤 ${b.guest}</p>
+                <p class="text-sm text-gray-500">📅 ${b.checkIn} - ${b.checkOut}</p>
+                <button onclick="cancelBooking(${b.id})" class="mt-3 text-red-500 text-sm underline">ยกเลิกการจอง</button>
+            </div>
+        `).join('');
+    }
+
+    function cancelBooking(id) {
+        if(!confirm('ยืนยันลบการจองนี้?')) return;
+        const db = getDB();
+        db.bookings = db.bookings.filter(b => b.id !== id);
+        saveDB(db);
+        showToast('ลบการจองแล้ว', 'red');
+    }
+
+    // --- Food Order Logic ---
+    function renderMenu() {
+        const container = document.getElementById('menu-list');
+        container.innerHTML = menuItems.map((item, index) => `
+            <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">${item.icon}</span>
+                    <div>
+                        <div class="font-bold text-gray-800">${item.name}</div>
+                        <div class="text-pink-500 font-bold">฿${item.price}</div>
+                    </div>
+                </div>
+                <button onclick="addToCart(${index})" class="bg-pink-500 text-white w-8 h-8 rounded-full shadow hover:scale-110 transition">+</button>
+            </div>
+        `).join('');
+    }
+
+    function addToCart(index) {
+        const item = menuItems[index];
+        const existing = cart.find(c => c.name === item.name);
+        if (existing) existing.qty++;
+        else cart.push({...item, qty: 1});
+        updateCartUI();
+        showToast('เพิ่มลงตะกร้าแล้ว');
+    }
+
+    function updateCartUI() {
+        const badge = document.getElementById('cart-badge');
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        if (count > 0) {
+            badge.classList.remove('hidden');
+            badge.textContent = count;
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    function showCart() {
+        const container = document.getElementById('cart-items');
+        document.getElementById('cart-modal').classList.remove('hidden');
+        document.getElementById('cart-modal').classList.add('flex');
+        
+        let total = 0;
+        if(cart.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-400 mt-10">ไม่มีสินค้าในตะกร้า</p>';
+        } else {
+            container.innerHTML = cart.map((item, index) => {
+                total += item.price * item.qty;
+                return `
+                <div class="flex justify-between items-center border-b py-2">
+                    <div>
+                        <div class="font-bold text-sm">${item.name}</div>
+                        <div class="text-xs text-gray-500">฿${item.price} x ${item.qty}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="adjustCart(${index}, -1)" class="bg-gray-200 w-6 h-6 rounded text-sm">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="adjustCart(${index}, 1)" class="bg-pink-500 text-white w-6 h-6 rounded text-sm">+</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        document.getElementById('cart-total').textContent = `฿${total.toLocaleString()}`;
+    }
+
+    function adjustCart(index, delta) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) cart.splice(index, 1);
+        updateCartUI();
+        showCart();
+    }
+
+    function hideCart() {
+        document.getElementById('cart-modal').classList.add('hidden');
+        document.getElementById('cart-modal').classList.remove('flex');
+    }
+
+    function confirmOrder() {
+        const room = document.getElementById('order-room-number').value;
+        if (!room || cart.length === 0) {
+            alert('กรุณาระบุเลขห้องและเลือกสินค้า');
+            return;
+        }
+        
+        const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const db = getDB();
+        db.orders.push({
+            id: Date.now(),
+            room,
+            items: cart,
+            total,
+            status: 'pending',
+            time: new Date().toLocaleString('th-TH')
+        });
+        saveDB(db);
+        
+        cart = [];
+        updateCartUI();
+        hideCart();
+        showToast('สั่งอาหารสำเร็จ! 🍲');
+    }
+
+    function renderAllOrders() {
+        const db = getDB();
+        const container = document.getElementById('all-orders-list');
+        if (db.orders.length === 0) {
+            container.innerHTML = '<div class="text-center py-10 text-gray-400">ยังไม่มีออเดอร์</div>';
+            return;
+        }
+        container.innerHTML = db.orders.slice().reverse().map(o => `
+            <div class="bg-white p-4 rounded-xl shadow-md border mb-3">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="font-bold text-lg">ห้อง: ${o.room}</h4>
+                        <p class="text-xs text-gray-500">${o.time}</p>
+                    </div>
+                    <span class="${o.status==='pending'?'bg-yellow-500':'bg-green-500'} text-white text-xs px-2 py-1 rounded">${o.status==='pending'?'รอทำ':'เสร็จ'}</span>
+                </div>
+                <div class="bg-gray-50 p-2 rounded mb-2 text-sm">
+                    ${o.items.map(i => `<div>- ${i.name} x${i.qty}</div>`).join('')}
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-pink-500">รวม ฿${o.total.toLocaleString()}</span>
+                    ${o.status === 'pending' ? `<button onclick="finishOrder(${o.id})" class="bg-green-500 text-white text-xs px-3 py-1 rounded">ปิดงาน</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function finishOrder(id) {
+        const db = getDB();
+        const order = db.orders.find(o => o.id === id);
+        if (order) {
+            order.status = 'completed';
+            saveDB(db);
+            showToast('อัพเดทสถานะแล้ว');
+        }
+    }
+
+    // --- Utilities ---
+    function showToast(msg, color='green') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `toast ${color === 'red' ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-4 rounded-2xl shadow-xl font-bold show`;
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
+
