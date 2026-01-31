@@ -1,1 +1,148 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELLYLASH – Premium Eyelash Extensions</title>
 
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body{background:#0b0b0c;color:white;font-family:Montserrat;margin:0}
+.hero{
+  background:url("https://i.postimg.cc/gkvyyN4p/Luxury-eyelash-extensions-advertising-poster-extreme-close-up-of-a-woman-e-20260131-072825-0000.jpg")
+  center/cover no-repeat;
+  height:60vh;
+  mask-image:linear-gradient(to bottom, black 65%, transparent 100%);
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 0 25px rgba(255,105,180,.35);
+  transition:.3s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 45px rgba(255,105,180,.65);
+}
+.gallery img{
+  width:150px;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:14px;
+}
+.glass{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+  border-radius:20px;
+}
+input,select{
+  background:rgba(0,0,0,.4);
+  border-radius:12px;
+  padding:12px;
+  width:100%;
+  color:white;
+}
+</style>
+</head>
+
+<body class="overflow-x-hidden">
+
+<!-- HERO -->
+<section class="hero flex items-center justify-center">
+  <div class="text-center mt-24">
+    <h1 class="text-4xl tracking-widest font-semibold">ELLYLASH</h1>
+    <p class="text-sm opacity-80 mt-2">Premium Eyelash Extensions</p>
+    <a href="#booking" class="inline-block mt-6 px-8 py-3 rounded-full bg-pink-400 text-black font-semibold">
+      BOOK NOW
+    </a>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="px-6 mt-12">
+<h2 class="text-center text-2xl tracking-widest mb-6">SERVICES</h2>
+<div class="grid grid-cols-2 gap-4">
+  <div class="card">Wet Look<br><span class="text-pink-400 text-xl">599฿</span></div>
+  <div class="card">Doll Look<br><span class="text-pink-400 text-xl">599฿</span></div>
+  <div class="card">Anime Look<br><span class="text-pink-400 text-xl">699฿</span></div>
+  <div class="card">So Cute<br><span class="text-pink-400 text-xl">599฿</span></div>
+</div>
+</section>
+
+<!-- GALLERY -->
+<section class="mt-16 px-6">
+<h2 class="text-center text-2xl tracking-widest mb-4">GALLERY</h2>
+<div class="flex gap-4 overflow-x-auto gallery pb-2">
+  <img src="https://i.postimg.cc/5NyHwKRN/1769763534518.jpg">
+  <img src="https://i.postimg.cc/Kz5K56b3/1769763534401.jpg">
+  <img src="https://i.postimg.cc/Hx0P7MWb/1769739281503.jpg">
+  <img src="https://i.postimg.cc/B65w1FZ1/1769739279789.jpg">
+</div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking" class="mt-20 px-6 pb-28">
+<h2 class="text-2xl mb-4 tracking-widest">BOOKING</h2>
+
+<div class="glass p-4 space-y-3">
+  <input id="name" placeholder="ชื่อผู้จอง">
+  <input id="phone" placeholder="เบอร์โทร">
+  <select id="service">
+    <option>Wet Look</option>
+    <option>Doll Look</option>
+    <option>Anime Look</option>
+    <option>So Cute</option>
+  </select>
+
+  <!-- ✅ วันจอง -->
+  <input id="date" type="date">
+
+  <!-- ✅ เวลา -->
+  <input id="time" type="time">
+
+  <div class="text-sm opacity-70 mt-2">
+    📅 ร้านจะยืนยันคิวผ่าน LINE อีกครั้ง
+  </div>
+
+  <a onclick="submitBooking()"
+     class="block w-full text-center py-3 bg-pink-400 text-black rounded-full font-semibold cursor-pointer">
+     ยืนยันการจองผ่าน LINE
+  </a>
+</div>
+</section>
+
+<script>
+function submitBooking(){
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  if(!name || !phone || !date || !time){
+    alert("กรุณากรอกข้อมูลให้ครบ");
+    return;
+  }
+
+  const msg = `
+จองคิวต่อขนตา 💗
+ชื่อ: ${name}
+เบอร์: ${phone}
+บริการ: ${service}
+วัน: ${date}
+เวลา: ${time}
+`;
+
+  const lineURL =
+    "https://line.me/R/ti/p/@220blqmu?text=" +
+    encodeURIComponent(msg);
+
+  window.open(lineURL, "_blank");
+}
+</script>
+
+</body>
+</html>
