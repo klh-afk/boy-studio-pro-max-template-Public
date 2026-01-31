@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="th" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    * { font-family: 'Prompt', sans-serif; }
+    .screen-content {
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .screen-content::-webkit-scrollbar { width: 6px; }
+    .screen-content::-webkit-scrollbar-track { background: transparent; }
+    .screen-content::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.5); border-radius: 3px; }
+    
+    .masonry-grid { column-count: 2; column-gap: 12px; }
+    .masonry-item { break-inside: avoid; margin-bottom: 12px; }
+    @media (max-width: 640px) { .masonry-grid { column-count: 1; } }
+    
+    .toggle-switch {
+      width: 52px; height: 28px; border-radius: 14px;
+      position: relative; cursor: pointer; transition: all 0.3s ease;
+      background-color: #cbd5e1;
+    }
+    .toggle-switch.active { background-color: #10b981; }
+    .toggle-switch::after {
+      content: ''; position: absolute; width: 24px; height: 24px;
+      border-radius: 50%; background: white; top: 2px; left: 2px;
+      transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.active::after { transform: translateX(24px); }
+    
+    .fab {
+      position: fixed; bottom: 80px; right: 20px;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: #667eea; /* Fallback color */
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 4px 8px rgba(0,0,0,0.12);
+      cursor: pointer; transition: all 0.3s ease; z-index: 40;
+    }
+    .fab:hover { transform: scale(1.1) rotate(90deg); }
+    
+    .modal-overlay { backdrop-filter: blur(8px); }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .live-sync-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app-container" class="w-full h-full transition-colors duration-500" style="background: #faf8f3;">
+   <div id="page-container" class="screen-content"></div>
+   
+   <div id="fab" class="fab bg-blue-600" onclick="openAddModal()" style="display: none;">
+    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+   </div>
+   
+   <div class="h-[60px] bg-white border-t border-gray-200 flex items-center justify-around px-2 fixed bottom-0 w-full z-30">
+     <button onclick="navigateToPage('dashboard')" class="nav-btn flex flex-col items-center px-3 py-1" data-page="dashboard">
+       <svg class="w-6 h-6 nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+       <span class="text-xs nav-label mt-0.5">หลัก</span> 
+     </button> 
+     <button onclick="navigateToPage('calendar')" class="nav-btn flex flex-col items-center px-3 py-1" data-page="calendar">
+       <svg class="w-6 h-6 nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /> <path d="M16 2v4M8 2v4M3 10h18" /></svg>
+       <span class="text-xs nav-label mt-0.5">ปฏิทิน</span> 
+     </button> 
+     <button onclick="navigateToPage('records')" class="nav-btn flex flex-col items-center px-3 py-1" data-page="records">
+       <svg class="w-6 h-6 nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+       <span class="text-xs nav-label mt-0.5">รายการ</span> 
+     </button> 
+     <button onclick="navigateToPage('settings')" class="nav-btn flex flex-col items-center px-3 py-1" data-page="settings">
+       <svg class="w-6 h-6 nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3" /> <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+       <span class="text-xs nav-label mt-0.5">ตั้งค่า</span> 
+     </button>
+   </div>
+  </div>
+
+  <div id="modal" class="fixed inset-0 bg-black/60 modal-overlay hidden items-center justify-center z-50">
+   <div class="bg-white rounded-3xl p-6 mx-4 max-w-md w-full shadow-2xl fade-in" onclick="event.stopPropagation()">
+    <div class="flex justify-between items-center mb-5">
+     <h3 id="modal-title" class="text-xl font-bold text-gray-800">เพิ่มรายการใหม่</h3>
+     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+     </button>
+    </div>
+    <form id="modal-form" onsubmit="handleSubmit(event)">
+     <div class="space-y-4">
+      <div>
+        <label for="item-type" class="block text-sm font-medium text-gray-700 mb-1">ประเภท</label> 
+        <select id="item-type" required class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30"> 
+            <option value="note">บันทึก</option> 
+            <option value="booking">การจอง</option> 
+            <option value="event">กิจกรรม</option> 
+        </select>
+      </div>
+      <div>
+        <label for="item-title" class="block text-sm font-medium text-gray-700 mb-1">หัวข้อ</label> 
+        <input type="text" id="item-title" required class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+      </div>
+      <div>
+        <label for="item-content" class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด</label> 
+        <textarea id="item-content" rows="3" class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+       <div>
+        <label for="item-date" class="block text-sm font-medium text-gray-700 mb-1">วันที่</label> 
+        <input type="date" id="item-date" required class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+       </div>
+       <div>
+        <label for="item-time" class="block text-sm font-medium text-gray-700 mb-1">เวลา</label> 
+        <input type="time" id="item-time" class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+       </div>
+      </div>
+      <div>
+        <label for="item-category" class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่</label> 
+        <select id="item-category" class="w-full px-4 py-2.5 bg-gray-50 rounded-xl text-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30"> 
+            <option value="work">งาน</option> 
+            <option value="personal">ส่วนตัว</option> 
+            <option value="urgent">ด่วน</option> 
+            <option value="other">อื่น ๆ</option> 
+        </select>
+      </div>
+     </div>
+     <div class="flex gap-3 mt-6">
+        <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"> ยกเลิก </button> 
+        <button type="submit" id="submit-btn" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition flex items-center justify-center gap-2"> <span>บันทึก</span> </button>
+     </div>
+    </form>
+   </div>
+  </div>
+
+  <script>
+    let currentPage = 'dashboard';
+    let allData = [];
+    let darkMode = false;
+    
+    const defaultConfig = {
+      app_name: 'Universal Hub',
+      dashboard_title: 'ศูนย์รวมบันทึก',
+      search_placeholder: 'ค้นหาบันทึก...',
+      calendar_title: 'ปฏิทินอเนกประสงค์',
+      records_title: 'รายการจองและคิว',
+      settings_title: 'ตั้งค่าและระบบควบคุม',
+      primary_color: '#667eea',
+      secondary_color: '#764ba2',
+      background_color: '#faf8f3',
+      text_color: '#1e293b',
+      accent_color: '#10b981'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    // Mock Data สำหรับเริ่มต้น (ถ้าไม่มี SDK)
+    allData = [
+        { __backendId: '1', type: 'note', title: 'ประชุมทีม', content: 'เตรียมสไลด์สำหรับวันจันทร์', timestamp: Date.now(), category: 'work', time: '10:00' },
+        { __backendId: '2', type: 'event', title: 'งานแต่งงานเพื่อน', content: 'ที่โรงแรมดุสิต', timestamp: Date.now() + 86400000, category: 'personal', time: '18:00' },
+        { __backendId: '3', type: 'booking', title: 'จองคิวทำฟัน', content: 'คลินิกทันตกรรม', timestamp: Date.now() + 172800000, category: 'urgent', time: '13:30' }
+    ];
+
+    // Data SDK Handler (ถ้ามี)
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data.sort((a, b) => b.timestamp - a.timestamp);
+        renderCurrentPage();
+      }
+    };
+    
+    async function initDataSdk() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) console.error('Failed to initialize data SDK');
+      }
+    }
+
+    // เรียกใช้งานเมื่อโหลด
+    window.onload = function() {
+        initDataSdk();
+        navigateToPage('dashboard');
+        
+        // ตั้งค่า Default Date ใน Modal
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('item-date').value = today;
+    };
+    
+    // Navigation
+    function navigateToPage(page) {
+      currentPage = page;
+      updateNavigation();
+      renderCurrentPage();
+      
+      const fab = document.getElementById('fab');
+      if (page === 'dashboard' || page === 'calendar' || page === 'records') {
+        fab.style.display = 'flex';
+      } else {
+        fab.style.display = 'none';
+      }
+    }
+    
+    function updateNavigation() {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const page = btn.getAttribute('data-page');
+        const icon = btn.querySelector('.nav-icon');
+        const label = btn.querySelector('.nav-label');
+        const primaryColor = config.primary_color || defaultConfig.primary_color;
+        
+        if (page === currentPage) {
+          icon.style.color = primaryColor;
+          label.style.color = primaryColor;
+          label.style.fontWeight = '700';
+        } else {
+          icon.style.color = darkMode ? '#94a3b8' : '#64748b';
+          label.style.color = darkMode ? '#94a3b8' : '#64748b';
+          label.style.fontWeight = '500';
+        }
+      });
+      
+      const appContainer = document.getElementById('app-container');
+      appContainer.style.background = darkMode ? '#0f172a' : config.background_color;
+    }
+    
+    function renderCurrentPage() {
+      switch(currentPage) {
+        case 'dashboard': renderDashboard(); break;
+        case 'calendar': renderCalendar(); break;
+        case 'records': renderRecords(); break;
+        case 'settings': renderSettings(); break;
+      }
+    }
+    
+    // --- Dashboard Page ---
+    function renderDashboard() {
+      const container = document.getElementById('page-container');
+      const primaryColor = config.primary_color;
+      const dashboardTitle = config.dashboard_title;
+      
+      const textColor = darkMode ? '#f1f5f9' : '#1e293b';
+      const textSecondary = darkMode ? '#cbd5e1' : '#64748b';
+      const cardBg = darkMode ? '#1e293b' : '#ffffff';
+      const inputBg = darkMode ? '#334155' : '#f5f3ed';
+      
+      const categoryColors = {
+        work: { bg: '#8b7355', label: 'งาน' },
+        personal: { bg: '#a89079', label: 'ส่วนตัว' },
+        urgent: { bg: '#c49a7b', label: 'ด่วน' },
+        other: { bg: '#9d8b73', label: 'อื่น ๆ' }
+      };
+      
+      const notesHtml = allData.length > 0 ? `
+        <div class="masonry-grid">
+          ${allData.map(note => {
+            const catColor = categoryColors[note.category]?.bg || primaryColor;
+            return `
+              <div class="masonry-item">
+                <div class="p-4 rounded-2xl transition-all cursor-pointer" 
+                     style="background: ${cardBg}; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                  <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs px-3 py-1 rounded-full font-semibold" 
+                          style="background: ${catColor}20; color: ${catColor}">
+                      ${categoryColors[note.category]?.label || 'ทั่วไป'}
+                    </span>
+                  </div>
+                  <h3 class="font-bold text-base mb-2" style="color: ${textColor}">${note.title}</h3>
+                  ${note.content ? `<p class="text-sm mb-2" style="color: ${textSecondary}">${note.content}</p>` : ''}
+                  <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                    <span class="text-xs" style="color: ${textSecondary}">${new Date(note.timestamp).toLocaleDateString('th-TH')}</span>
+                    ${note.time ? `<span class="text-xs" style="color: ${textSecondary}">⏰ ${note.time}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : `<div class="text-center py-10 text-gray-400">ยังไม่มีข้อมูล</div>`;
+      
+      container.innerHTML = `
+        <div class="px-5 py-6">
+          <div class="flex justify-between items-center mb-5">
+            <h2 class="text-2xl font-bold" style="color: ${textColor}">${dashboardTitle}</h2>
+          </div>
+          <div class="relative mb-6">
+            <input type="text" placeholder="${config.search_placeholder}" 
+                   class="w-full pl-4 pr-10 py-3.5 rounded-2xl border-none focus:outline-none"
+                   style="background: ${inputBg}; color: ${textColor};"
+                   oninput="filterData(this.value)">
+          </div>
+          ${notesHtml}
+        </div>
+      `;
+    }
+
+    // --- Calendar Page ---
+    function renderCalendar() {
+      const container = document.getElementById('page-container');
+      const textColor = darkMode ? '#f1f5f9' : '#1e293b';
+      const cardBg = darkMode ? '#1e293b' : '#ffffff';
+      
+      // ตัวอย่างปฏิทินแบบง่าย (Static Month View)
+      const days = Array.from({length: 30}, (_, i) => i + 1);
+      
+      container.innerHTML = `
+        <div class="px-5 py-6">
+          <h2 class="text-2xl font-bold mb-6" style="color: ${textColor}">${config.calendar_title}</h2>
+          <div class="bg-white rounded-2xl p-4 shadow-sm" style="background: ${cardBg}">
+            <div class="flex justify-between mb-4">
+                <h3 class="font-bold" style="color: ${textColor}">มกราคม 2024</h3>
+            </div>
+            <div class="grid grid-cols-7 gap-2 text-center text-sm">
+                ${['อา','จ','อ','พ','พฤ','ศ','ส'].map(d => `<div class="text-gray-400 font-medium py-2">${d}</div>`).join('')}
+                ${days.map(d => `
+                    <div class="aspect-square flex items-center justify-center rounded-lg hover:bg-gray-100 cursor-pointer" 
+                         style="color: ${textColor}">
+                        ${d}
+                    </div>
+                `).join('')}
+            </div>
+          </div>
+          <div class="mt-6">
+             <h3 class="font-bold mb-3" style="color: ${textColor}">วันนี้</h3>
+             <div class="p-4 rounded-xl mb-3 flex items-center gap-4" style="background: ${cardBg}">
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">10</div>
+                <div>
+                    <h4 class="font-bold" style="color: ${textColor}">ประชุมทีม</h4>
+                    <p class="text-xs text-gray-500">10:00 - 11:00 น.</p>
+                </div>
+             </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- Records Page ---
+    function renderRecords() {
+        const container = document.getElementById('page-container');
+        const textColor = darkMode ? '#f1f5f9' : '#1e293b';
+        const cardBg = darkMode ? '#1e293b' : '#ffffff';
+        
+        container.innerHTML = `
+            <div class="px-5 py-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: ${textColor}">${config.records_title}</h2>
+                <div class="space-y-3">
+                    ${allData.map(item => `
+                        <div class="p-4 rounded-xl flex justify-between items-center" style="background: ${cardBg}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 mb-1 inline-block">${item.type === 'booking' ? 'การจอง' : 'บันทึก'}</span>
+                                <h4 class="font-bold" style="color: ${textColor}">${item.title}</h4>
+                                <p class="text-xs text-gray-500">${new Date(item.timestamp).toLocaleDateString('th-TH')}</p>
+                            </div>
+                            <button class="text-gray-400 hover:text-blue-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Settings Page ---
+    function renderSettings() {
+        const container = document.getElementById('page-container');
+        const textColor = darkMode ? '#f1f5f9' : '#1e293b';
+        const cardBg = darkMode ? '#1e293b' : '#ffffff';
+        
+        container.innerHTML = `
+            <div class="px-5 py-6">
+                <h2 class="text-2xl font-bold mb-6" style="color: ${textColor}">${config.settings_title}</h2>
+                
+                <div class="rounded-2xl overflow-hidden mb-6" style="background: ${cardBg}">
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">🌙</div>
+                            <span style="color: ${textColor}">โหมดกลางคืน</span>
+                        </div>
+                        <div class="toggle-switch ${darkMode ? 'active' : ''}" onclick="toggleDarkMode()"></div>
+                    </div>
+                     <div class="p-4 border-b border-gray-100 fl
